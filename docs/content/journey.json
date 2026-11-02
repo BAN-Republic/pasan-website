@@ -1,0 +1,82 @@
+[
+  {
+    "period": "2008 – 09",
+    "title": "The foundation",
+    "organisation": "NYSCO Video · National Youth Services Council",
+    "description": "Diploma in Television Programme Production Techniques and Video Technology. Graduated batch top.",
+    "status": "past",
+    "order": 1
+  },
+  {
+    "period": "2009 – 12",
+    "title": "Entering the broadcast industry",
+    "organisation": "Rangiri Sri Lanka Media Network",
+    "description": "Technical Operations Officer in the engineering department.",
+    "status": "past",
+    "order": 2
+  },
+  {
+    "period": "2012 – 21",
+    "title": "Discovering the art of filmmaking",
+    "organisation": "Wide Angle Productions (Pvt) Ltd",
+    "description": "Producer, cinematographer, video editor and colorist. Best Editor award for Sudu Neluma Pipila.",
+    "status": "past",
+    "order": 3
+  },
+  {
+    "period": "2016 – 19",
+    "title": "Academic excellence",
+    "organisation": "University of Vocational Technology",
+    "description": "B.Tech in Film and Television Production Technology. Second Class Upper, batch top.",
+    "status": "past",
+    "order": 4
+  },
+  {
+    "period": "2019 – 23",
+    "title": "Sharing the knowledge",
+    "organisation": "The Video Academy",
+    "description": "Lecturer in videography and technology.",
+    "status": "past",
+    "order": 5
+  },
+  {
+    "period": "2021 – 25",
+    "title": "Expanding creative vision",
+    "organisation": "Sky Films International (Pvt) Ltd",
+    "description": "Director, cinematographer, editor and colorist.",
+    "status": "past",
+    "order": 6
+  },
+  {
+    "period": "2023 –",
+    "title": "Mentoring the next generation",
+    "organisation": "University College Rathmalana",
+    "description": "Visiting lecturer in colour grading.",
+    "status": "present",
+    "order": 7
+  },
+  {
+    "period": "2025 –",
+    "title": "Building a creative vision",
+    "organisation": "Creativity LAB LK (Pvt) Ltd",
+    "description": "Director, cinematographer, editor and colorist, leading creative productions and cinematic brand storytelling.",
+    "status": "present",
+    "order": 8
+  },
+  {
+    "period": "Oct 2026",
+    "title": "Industry knowledge meets creative education",
+    "organisation": "AMDT Sri Lanka",
+    "description": "External facilitator, sharing professional industry knowledge and practical creative experience with aspiring professionals.",
+    "status": "present",
+    "order": 9
+  },
+  {
+    "period": "2027",
+    "title": "Building the next generation of filmmakers",
+    "organisation": "The Film Foundry",
+    "description": "Founder. A film education platform for commercial directing, cinematography and the craft of filmmaking, bridging creative education and real-world production.",
+    "status": "upcoming",
+    "order": 10
+  }
+]

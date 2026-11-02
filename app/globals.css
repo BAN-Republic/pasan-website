@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* Tokens from docs/reference/design-reference.html. Font families come from
+   next/font variables set on <html> in app/layout.tsx. */
+:root {
+  --ink: #0b0b0b;
+  --char: #141312;
+  --graphite: #1e1c1a;
+  --gold: #d4a24a;
+  --gold-hi: #e9bf6c;
+  --paper: #f5f5f5;
+  --mute: #a7a197;
+  --line: rgba(245, 245, 245, 0.12);
+  --rec: #e5483b;
+  --display: var(--font-bebas-neue), var(--font-noto-sans-sinhala), Impact, "Arial Narrow", sans-serif;
+  --body: var(--font-inter), var(--font-noto-sans-sinhala), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: var(--font-jetbrains-mono), ui-monospace, Menlo, Consolas, monospace;
+  --script: var(--font-mrs-saint-delafield), "Brush Script MT", cursive;
+  --gl: max(clamp(16px, 4vw, 56px), env(safe-area-inset-left, 0px));
+  --gr: max(clamp(16px, 4vw, 56px), env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-char: var(--char);
+  --color-graphite: var(--graphite);
+  --color-gold: var(--gold);
+  --color-gold-hi: var(--gold-hi);
+  --color-paper: var(--paper);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-rec: var(--rec);
+  --font-display: var(--display);
+  --font-sans: var(--body);
+  --font-mono: var(--mono);
+  --font-script: var(--script);
+}
+
+html {
+  background: var(--ink);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 15px/1.65 var(--body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* TODO: port the rest of the bespoke CSS from the design reference. */

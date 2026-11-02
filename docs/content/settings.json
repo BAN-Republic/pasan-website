@@ -1,0 +1,78 @@
+{
+  "name": "Pasan Rasantha Chandrasekera",
+  "tagline": "Turning ideas into powerful visual stories.",
+  "roles": [
+    "Commercial Film Director",
+    "Cinematographer",
+    "Editor",
+    "Colorist"
+  ],
+  "showreelYoutubeUrl": "https://www.youtube.com/watch?v=ae6NjVvEt6Y",
+  "email": "TODO@pasanrasantha.com",
+  "location": "Colombo, Sri Lanka",
+  "availability": "Booking projects worldwide",
+  "socials": {
+    "youtube": "https://www.youtube.com/@pasanrasantha",
+    "facebook": "https://www.facebook.com/Rasantha"
+  },
+  "bioParagraphs": [
+    "I'm Pasan Rasantha Chandrasekera, a Sri Lankan commercial film director and visual storyteller. For more than a decade I've worked across commercial production, cinematography, television, post-production and creative development, with key roles at Wide Angle Productions and Sky Films International before leading productions at Creativity LAB LK.",
+    "I hold a B.Tech in Film and Television Production Technology from the University of Vocational Technology, graduating Second Class Upper as top of my batch, and I teach colour grading as a visiting lecturer at University College Rathmalana.",
+    "I believe a successful commercial is more than an advertisement. It's a crafted visual experience that connects a brand with its audience through emotion, story and cinematic language, carried from the first idea to the final frame."
+  ],
+  "awards": [
+    {
+      "title": "Effie",
+      "detail": "Effie Sri Lanka award-winning campaign for Singer Sri Lanka PLC"
+    },
+    {
+      "title": "Best Editor",
+      "detail": "Ridmanjalee Short Film Festival · Sudu Neluma Pipila"
+    }
+  ],
+  "stats": [
+    {
+      "value": 18,
+      "suffix": "+",
+      "label": "Years in film & TV"
+    },
+    {
+      "value": 15,
+      "suffix": "+",
+      "label": "Leading brands"
+    },
+    {
+      "value": 27,
+      "suffix": "",
+      "label": "Featured films"
+    },
+    {
+      "value": 2,
+      "suffix": "",
+      "label": "Institutes teaching"
+    }
+  ],
+  "clients": [
+    "Dialog",
+    "Singer",
+    "Abans",
+    "Keells",
+    "Cargills",
+    "Munchee",
+    "Pears Baby",
+    "Comfort",
+    "PickMe",
+    "Suzuki",
+    "EDB",
+    "BOI",
+    "SLIC",
+    "Hutch",
+    "AIA",
+    "Diva",
+    "Maggi",
+    "Prima",
+    "Ceylinco Life",
+    "Lankem"
+  ],
+  "quote": "Great films don't simply show something. They make people feel something."
+}
