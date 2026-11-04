@@ -11,12 +11,13 @@ Pasan must be able to add new films himself through an admin page, without touch
 ## Stack
 - Next.js 16 (App Router) + React 19 + TypeScript (strict)
 - Tailwind CSS v4 for layout and spacing; bespoke effects (grain, letterbox, clapperboard, HUD, keyframes) live in `app/globals.css`
-- Sanity v3 as the CMS, Studio embedded at `/admin` via `next-sanity`
+- Sanity v6 as the CMS (`sanity` 6.x), Studio embedded at `/admin` via `next-sanity` 13
+- `cacheComponents` is on in `next.config.ts`: cache data with `'use cache'` + `cacheTag('content')` + `cacheLife(...)`, not `fetch` `next.tags` or route segment config like `export const dynamic`
 - Deployed on Vercel. Videos are hosted on YouTube; never store video files in the repo.
 - Contact form: Route Handler `app/api/contact/route.ts` sending with Resend
 
 ## Rules
-- Server components by default. Add `"use client"` only for: Intro, VideoModal, GradeLab, FilmStrip, Cursor, SoundToggle, WorkGrid filters, Contact form.
+- Server components by default. Add `"use client"` only for: Intro, VideoModal, GradeLab, FilmStrip, Cursor, SoundToggle, WorkGrid filters, Contact form. (Exception: `sanity/sanity.config.ts` is `"use client"` because the embedded Studio needs it.)
 - All content comes from Sanity through typed GROQ queries in `lib/queries.ts`. No hard-coded films, bio, journey or clients in components.
 - Types live in `lib/types.ts`. No `any`.
 - YouTube: show the thumbnail first, mount the iframe only on click (`youtube-nocookie.com`, `rel=0`). Never render more than one iframe at a time.

@@ -13,7 +13,16 @@ Browser ──> Vercel (Next.js App Router)
 Sanity (hosted)  stores content + images (free plan)
 YouTube          hosts every video
 ```
-No custom backend server. Fetch with `next-sanity` `sanityFetch` using `{ next: { tags: ['content'] } }`.
+No custom backend server. `cacheComponents` is enabled, so data is cached with the `'use cache'` directive rather than `fetch` options. Every fetch helper in `lib/queries.ts` looks like:
+```ts
+export async function getFilms(): Promise<Film[]> {
+  'use cache'
+  cacheTag('content')
+  cacheLife('hours') // safety net if a webhook is missed; the webhook is the normal refresh path
+  return client.fetch(FILMS_QUERY)
+}
+```
+`cacheTag`/`cacheLife` come from `next/cache`. Do not use `export const dynamic` / `revalidate` route segment config (not allowed with `cacheComponents`).
 
 ## 3. Folder structure
 ```
@@ -55,7 +64,7 @@ docs/ (this spec, content, reference)
 | thumbnail | image with hotspot | optional; falls back to YouTube thumbnail |
 | description | text, max 300 chars | optional |
 | featured | boolean | the first featured film becomes the large card |
-| order | number | manual sort (use `@sanity/orderable-document-list`) |
+| orderRank | string (lexorank, from `orderRankField`) | manual drag-and-drop sort via `@sanity/orderable-document-list`; query with `order(orderRank)`. Replaces the numeric `order` in `docs/content`. |
 | published | boolean, default true | hide without deleting |
 
 Category labels: tvc → "TVC", promo → "Promo film", music → "Jingle · Music video", doc → "Documentary", corp → "Corporate".
@@ -63,10 +72,10 @@ Category labels: tvc → "TVC", promo → "Promo film", music → "Jingle · Mus
 Add a YouTube preview in the Studio: show the thumbnail of `youtubeUrl` in the document list.
 
 ### journeyStep (document, orderable)
-period (string, e.g. "2012 – 21"), title, organisation, description (text), status (`past` | `present` | `upcoming`), order.
+period (string, e.g. "2012 – 21"), title, organisation, description (text), status (`past` | `present` | `upcoming`), orderRank.
 
 ### btsFrame (document, orderable)
-image (required, with alt), caption, label (e.g. "Day 02"), order.
+image (required, with alt), caption, label (e.g. "Day 02"), orderRank.
 
 ### siteSettings (singleton)
 name, tagline, roles (array of strings), showreelYoutubeUrl, email, location, availability, socials (youtube, facebook, instagram, vimeo, linkedin – all optional urls), bioParagraphs (array of text), awards (array of {title, detail}), stats (array of {value:number, suffix, label}), clients (array of strings), heroImage, portraitImage, gradeLabImage, contactImage, quote.
@@ -94,7 +103,9 @@ Use a structure builder so siteSettings opens as a single document, and Films, J
 POST JSON {name, email, type, message, company(honeypot)}. Validate with zod. Send via Resend to `CONTACT_TO_EMAIL`, reply-to = sender. Return 200 / 400 / 429 / 500.
 
 ## 7. Revalidation
-`/api/revalidate` checks the Sanity webhook signature (`SANITY_REVALIDATE_SECRET`, `parseBody` from `next-sanity/webhook`) and calls `revalidateTag('content')`. Configure the webhook in sanity.io/manage on create/update/delete for all types.
+`/api/revalidate` checks the Sanity webhook signature with `parseBody(req, process.env.SANITY_REVALIDATE_SECRET, true)` from `next-sanity/webhook` (the `true` waits for Content Lake consistency), returns 401 on a bad signature, then calls `revalidateTag('content', { expire: 0 })`.
+
+Next 16 signature: `revalidateTag(tag: string, profile: string | { expire?: number })`. The one-argument form is deprecated. `{ expire: 0 }` expires the tag immediately, so the next visit (e.g. Pasan checking his edit) gets fresh content. `'max'` would serve stale content once while revalidating in the background. `updateTag` only works in Server Actions, not Route Handlers. Configure the webhook in sanity.io/manage on create/update/delete for all types.
 
 ## 8. SEO
 Metadata from siteSettings, Open Graph image (hero), `sitemap.ts`, `robots.ts`, JSON-LD `Person` with jobTitle "Commercial Film Director", sameAs = socials, and `VideoObject` for the showreel.
