@@ -27,9 +27,10 @@ export async function getFilms(): Promise<Film[]> {
 ## 3. Folder structure
 ```
 app/
-  layout.tsx            fonts, metadata, grain + vignette overlays
-  page.tsx              composes sections in order
+  layout.tsx            root: <html>/<body>, fonts, globals.css, metadata
   globals.css           ported bespoke CSS from design reference
+  (site)/layout.tsx     public-site chrome: intro, nav, footer, cursor, grain + vignette
+  (site)/page.tsx       composes sections in order
   admin/[[...tool]]/page.tsx
   api/contact/route.ts
   api/revalidate/route.ts

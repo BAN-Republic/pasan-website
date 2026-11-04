@@ -64,10 +64,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         notoSansSinhala.variable,
       ].join(" ")}
     >
-      <body>
-        {children}
-        {/* TODO: grain + vignette overlays (port .grain / .vig from design reference) */}
-      </body>
+      {/* Site chrome (grain, vignette, nav, intro) lives in app/(site)/layout.tsx. */}
+      <body>{children}</body>
     </html>
   );
 }
