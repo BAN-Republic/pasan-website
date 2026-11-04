@@ -56,6 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={[
         bebasNeue.variable,
         inter.variable,
@@ -64,8 +65,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         notoSansSinhala.variable,
       ].join(" ")}
     >
-      {/* Site chrome (grain, vignette, nav, intro) lives in app/(site)/layout.tsx. */}
-      <body>{children}</body>
+      {/* Site chrome (grain, vignette, nav, intro) lives in app/(site)/layout.tsx.
+          suppressHydrationWarning: components/IntroScript.tsx sets data-intro on <html>
+          and a class on <body> before React hydrates. */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

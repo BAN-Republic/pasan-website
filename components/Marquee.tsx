@@ -1,22 +1,14 @@
-// Copy from the design reference.
-const WORDS = [
-  "Commercial Direction",
-  "Cinematography",
-  "Editing",
-  "Colour Grading",
-  "TV Commercials",
-  "Brand Films",
-  "Documentary",
-  "Music Videos",
-  "Colombo",
-];
+interface MarqueeProps {
+  words: string[];
+}
 
-export default function Marquee() {
+export default function Marquee({ words }: MarqueeProps) {
+  if (words.length === 0) return null;
   // Doubled so the -50% keyframe loops seamlessly.
   return (
     <div className="strip-m" aria-hidden="true">
       <div className="mq" id="mq">
-        {[...WORDS, ...WORDS].map((word, i) => (
+        {[...words, ...words].map((word, i) => (
           <span key={i}>{word}</span>
         ))}
       </div>

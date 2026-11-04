@@ -2,9 +2,10 @@ import { cacheLife } from "next/cache";
 
 interface FooterProps {
   name: string | null;
+  line: string | null;
 }
 
-export default async function Footer({ name }: FooterProps) {
+export default async function Footer({ name, line }: FooterProps) {
   // Cached so the copyright year can be computed under cacheComponents.
   "use cache";
   cacheLife("days");
@@ -15,7 +16,7 @@ export default async function Footer({ name }: FooterProps) {
       <div className="wrap">
         {first && <span className="sig">{first}</span>}
         <span className="mono">
-          Great films make people feel something · © {year} {name}
+          {line && `${line} · `}© {year} {name}
         </span>
         <a href="#home" className="arrow">
           Back to top{" "}

@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Cursor from "@/components/Cursor";
 import Footer from "@/components/Footer";
 import Intro from "@/components/Intro";
+import IntroScript from "@/components/IntroScript";
 import Nav, { type NavLink } from "@/components/Nav";
 import ScrollTimecode from "@/components/ScrollTimecode";
+import Toast from "@/components/Toast";
 import { sanityImageProps } from "@/lib/image";
 import { getBtsFrames, getJourney, getSettings } from "@/lib/queries";
 
@@ -41,7 +43,9 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   const links: NavLink[] = [
     { href: "#home", label: "Home" },
     { href: "#work", label: "Portfolio" },
-    ...(settings?.showreelYoutubeId ? [{ href: "#reel", label: "Showreel", reel: true }] : []),
+    ...(settings?.showreelYoutubeId
+      ? [{ href: `https://www.youtube.com/watch?v=${settings.showreelYoutubeId}`, label: "Showreel", reel: true }]
+      : []),
     { href: "#grade", label: "Grade Lab" },
     { href: "#about", label: "About" },
     ...(journey.length ? [{ href: "#journey", label: "Journey" }] : []),
@@ -52,14 +56,16 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
 
   return (
     <div className="site">
+      <IntroScript />
       <Intro />
       <div className="grain" aria-hidden="true" />
       <div className="vig" aria-hidden="true" />
       <Cursor />
       <Nav name={settings?.name ?? null} links={links} />
       {children}
-      <Footer name={settings?.name ?? null} />
+      <Footer name={settings?.name ?? null} line={settings?.footerLine ?? null} />
       <ScrollTimecode />
+      <Toast />
     </div>
   );
 }

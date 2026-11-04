@@ -2,9 +2,6 @@ import Image from "next/image";
 import { sanityImageProps } from "@/lib/image";
 import type { SiteSettings } from "@/lib/types";
 
-// Copy from the design reference.
-const CRAFT = ["Direction", "Cinematography", "Editing", "Colour grading"];
-
 interface AboutProps {
   settings: SiteSettings | null;
 }
@@ -17,6 +14,7 @@ export default function About({ settings }: AboutProps) {
   const bio = settings?.bioParagraphs ?? [];
   const awards = settings?.awards ?? [];
   const stats = settings?.stats ?? [];
+  const craft = settings?.craftTags ?? [];
 
   return (
     <section className="sec" id="about">
@@ -37,11 +35,13 @@ export default function About({ settings }: AboutProps) {
           {bio.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
-          <div className="craft">
-            {CRAFT.map((craft) => (
-              <span key={craft}>{craft}</span>
-            ))}
-          </div>
+          {craft.length > 0 && (
+            <div className="craft">
+              {craft.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          )}
           {awards.length > 0 && (
             <div className="awards">
               {awards.map((award, i) => (

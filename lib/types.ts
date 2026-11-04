@@ -110,6 +110,10 @@ export interface SiteSettings {
   awards: Award[] | null;
   stats: Stat[] | null;
   clients: string[] | null;
+  marqueeWords: string[] | null;
+  craftTags: string[] | null;
+  journeyIntro: string | null;
+  footerLine: string | null;
   heroImage: SanityImage | null;
   portraitImage: SanityImage | null;
   gradeLabImage: SanityImage | null;

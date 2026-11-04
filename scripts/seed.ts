@@ -86,6 +86,10 @@ const SettingsJson = z.object({
     .array(z.object({ value: z.number(), suffix: z.string().optional(), label: z.string() }))
     .optional(),
   clients: z.array(z.string()).optional(),
+  marqueeWords: z.array(z.string()).optional(),
+  craftTags: z.array(z.string()).optional(),
+  journeyIntro: z.string().optional(),
+  footerLine: z.string().optional(),
   quote: z.string().optional(),
   todo: z.string().optional(),
 });
@@ -193,6 +197,10 @@ const settingsDoc = {
   awards: settings.awards?.map((award, i) => ({ _key: `award-${i}`, _type: "award", ...award })),
   stats: settings.stats?.map((stat, i) => ({ _key: `stat-${i}`, _type: "stat", ...stat })),
   clients: settings.clients,
+  marqueeWords: settings.marqueeWords,
+  craftTags: settings.craftTags,
+  journeyIntro: settings.journeyIntro,
+  footerLine: settings.footerLine,
   quote: settings.quote,
 };
 

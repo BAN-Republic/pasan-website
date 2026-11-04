@@ -8,6 +8,7 @@ const STATUS_CLASS: Record<JourneyStatus, string | undefined> = {
 
 interface JourneyProps {
   steps: JourneyStep[];
+  intro: string | null;
   quote: string | null;
 }
 
@@ -17,7 +18,7 @@ function splitQuote(quote: string): [string, string] {
   return match ? [match[1], match[2]] : [quote, ""];
 }
 
-export default function Journey({ steps, quote }: JourneyProps) {
+export default function Journey({ steps, intro, quote }: JourneyProps) {
   if (steps.length === 0 && !quote) return null;
   // Heading year comes from the first step, e.g. "2008 – 09" → 2008.
   const firstYear = steps[0]?.period.match(/\d{4}/)?.[0];
@@ -35,11 +36,7 @@ export default function Journey({ steps, quote }: JourneyProps) {
               next reel
             </h2>
           </div>
-          <p className="lede">
-            Filmmaking, creativity and education: from a broadcast engineering desk to directing
-            commercials for Sri Lanka&apos;s leading brands, and now building the next generation of
-            filmmakers.
-          </p>
+          {intro && <p className="lede">{intro}</p>}
         </div>
         {steps.length > 0 && (
           <ol className="tl" id="tl">

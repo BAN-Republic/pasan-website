@@ -50,6 +50,15 @@ export const siteSettings = defineType({
       group: "profile",
       validation: (rule) => rule.uri({ scheme: ["https", "http"] }),
     }),
+    defineField({
+      name: "marqueeWords",
+      title: "Marquee words",
+      type: "array",
+      group: "profile",
+      description: "The scrolling strip under the hero.",
+      of: [defineArrayMember({ type: "string" })],
+      options: { layout: "tags" },
+    }),
     defineField({ name: "quote", type: "text", rows: 2, group: "about" }),
     defineField({
       name: "bioParagraphs",
@@ -57,6 +66,23 @@ export const siteSettings = defineType({
       type: "array",
       group: "about",
       of: [defineArrayMember({ type: "text", rows: 4 })],
+    }),
+    defineField({
+      name: "craftTags",
+      title: "Craft tags",
+      type: "array",
+      group: "about",
+      description: "Small tags under the bio.",
+      of: [defineArrayMember({ type: "string" })],
+      options: { layout: "tags" },
+    }),
+    defineField({
+      name: "journeyIntro",
+      title: "Journey intro",
+      type: "text",
+      rows: 3,
+      group: "about",
+      description: "The paragraph beside the Journey heading.",
     }),
     defineField({
       name: "awards",
@@ -126,6 +152,13 @@ export const siteSettings = defineType({
     }),
     defineField({ name: "location", type: "string", group: "contact" }),
     defineField({ name: "availability", type: "string", group: "contact" }),
+    defineField({
+      name: "footerLine",
+      title: "Footer line",
+      type: "string",
+      group: "contact",
+      description: "Shown in the footer before the copyright.",
+    }),
     defineField({
       name: "socials",
       type: "object",

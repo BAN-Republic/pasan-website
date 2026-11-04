@@ -495,3 +495,13 @@ body.action .im,body.action .roles,body.action .cta{animation:fade 1s .45s both}
   :where(.site) *,:where(.site) *::before,:where(.site) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .grain{display:none}
 }
+
+/* ======================= additions (not in the reference) ======================= */
+/* Intro skipped before paint by components/IntroScript.tsx (seen this session, or reduced motion). */
+html[data-intro="skip"] #intro{display:none}
+/* Lens flare follows the mouse only; on touch, :hover would park it in the corner. */
+@media (hover:none),(pointer:coarse){.flare{display:none}}
+/* The reference's "Rolling" call has class .rec, which also matches the nav's .rec
+   (display:flex, and display:none under 760px): it sat at the far left on desktop and
+   was invisible on phones. Keep it a centred block like the other calls. */
+#intro .call.rec{display:block}

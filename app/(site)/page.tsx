@@ -21,11 +21,11 @@ export default async function Home() {
   return (
     <main>
       <Hero settings={settings} />
-      <Marquee />
+      <Marquee words={settings?.marqueeWords ?? []} />
       <WorkGrid films={films} />
       <GradeLab image={settings?.gradeLabImage ?? null} />
       <About settings={settings} />
-      <Journey steps={journey} quote={settings?.quote ?? null} />
+      <Journey steps={journey} intro={settings?.journeyIntro ?? null} quote={settings?.quote ?? null} />
       <FilmStrip frames={frames} />
       <Clients clients={settings?.clients ?? []} />
       <Contact settings={settings} />

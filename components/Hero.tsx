@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { Fragment } from "react";
+import HeroFrame, { AspectButtons, HudLens } from "@/components/HeroFrame";
 import ShowreelButton from "@/components/ShowreelButton";
 import SocialIcon, { SOCIAL_LABELS, socialLinks } from "@/components/SocialIcon";
+import Timecode from "@/components/Timecode";
 import { sanityImageProps } from "@/lib/image";
 import type { SiteSettings } from "@/lib/types";
 
@@ -9,7 +11,8 @@ interface HeroProps {
   settings: SiteSettings | null;
 }
 
-// TODO(Step 5): aspect-ratio letterbox animation, mouse parallax + lens flare, entrance animation.
+// Server-rendered copy; HeroFrame adds the letterbox, parallax and flare.
+// The entrance animation runs from CSS when <body> gets the "action" class.
 export default function Hero({ settings }: HeroProps) {
   const firstName = settings?.name?.split(" ")[0];
   const roles = settings?.roles ?? [];
@@ -19,7 +22,7 @@ export default function Hero({ settings }: HeroProps) {
     : null;
 
   return (
-    <section className="hero" id="home">
+    <HeroFrame>
       <div className="hero-media">
         {hero && <Image {...hero} alt={hero.alt} priority sizes="(max-width: 760px) 100vw, 64vw" />}
       </div>
@@ -32,12 +35,10 @@ export default function Hero({ settings }: HeroProps) {
         <span className="c c3"></span>
         <span className="c c4"></span>
         <span className="tl">
-          <i></i>REC <span id="hudtc">00:00:00:00</span>
+          <i></i>REC <Timecode id="hudtc" />
         </span>
         <span className="tr">A-CAM · 4K DCI · 23.976 FPS</span>
-        <span className="br" id="hudlens">
-          ISO 800 · 180° · T2.1 · 3200K
-        </span>
+        <HudLens />
       </div>
       <div className="hero-copy wrap">
         {firstName && (
@@ -81,13 +82,7 @@ export default function Hero({ settings }: HeroProps) {
           </a>
         </div>
       </div>
-      <div className="ar mono" role="group" aria-label="Frame aspect ratio">
-        <span>Frame</span>
-        <button type="button" data-ar="2.39">2.39</button>
-        <button type="button" data-ar="1.85">1.85</button>
-        <button type="button" data-ar="1.78">16:9</button>
-        <button type="button" data-ar="0">Open</button>
-      </div>
+      <AspectButtons />
       {socials.length > 0 && (
         <div className="socials" aria-label="Social links">
           {socials.map(({ key, url }) => (
@@ -97,6 +92,6 @@ export default function Hero({ settings }: HeroProps) {
           ))}
         </div>
       )}
-    </section>
+    </HeroFrame>
   );
 }

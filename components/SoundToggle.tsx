@@ -1,16 +1,29 @@
 "use client";
 
-// TODO(Step 5): Web Audio sound engine (lib/sound.ts), off by default.
+import { useSyncExternalStore } from "react";
+import { isSoundOn, setSound, subscribeSound, tick } from "@/lib/sound";
+
 export default function SoundToggle() {
+  // Server snapshot is "off", so hydration always matches; the saved choice applies after.
+  const on = useSyncExternalStore(subscribeSound, isSoundOn, () => false);
   return (
-    <button className="sound mono" id="soundBtn" aria-pressed="false" type="button">
-      <span className="bars">
+    <button
+      className={on ? "sound mono on" : "sound mono"}
+      id="soundBtn"
+      type="button"
+      aria-pressed={on}
+      onClick={() => {
+        setSound(!on);
+        tick();
+      }}
+    >
+      <span className="bars" aria-hidden="true">
         <i></i>
         <i></i>
         <i></i>
         <i></i>
       </span>
-      <span id="soundLbl">Sound off</span>
+      <span id="soundLbl">{on ? "Sound on" : "Sound off"}</span>
     </button>
   );
 }
