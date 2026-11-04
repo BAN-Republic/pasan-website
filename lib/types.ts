@@ -1,12 +1,13 @@
 // Domain types for every Sanity schema, shaped as the GROQ projections in
 // lib/queries.ts return them. Missing optional fields come back as null.
 
+// `title` labels a single film; `chip` labels the filter in Selected work.
 export const FILM_CATEGORIES = [
-  { value: "tvc", title: "TVC" },
-  { value: "promo", title: "Promo film" },
-  { value: "music", title: "Jingle · Music video" },
-  { value: "doc", title: "Documentary" },
-  { value: "corp", title: "Corporate" },
+  { value: "tvc", title: "TVC", chip: "TVC" },
+  { value: "promo", title: "Promo film", chip: "Promo films" },
+  { value: "music", title: "Jingle · Music video", chip: "Jingles & music" },
+  { value: "doc", title: "Documentary", chip: "Documentaries" },
+  { value: "corp", title: "Corporate", chip: "Corporate" },
 ] as const;
 
 export type FilmCategory = (typeof FILM_CATEGORIES)[number]["value"];

@@ -47,7 +47,10 @@ export const film = defineType({
     defineField({
       name: "category",
       type: "string",
-      options: { list: [...FILM_CATEGORIES], layout: "radio" },
+      options: {
+        list: FILM_CATEGORIES.map(({ value, title }) => ({ value, title })),
+        layout: "radio",
+      },
       validation: (rule) => rule.required(),
     }),
     defineField({

@@ -1,8 +1,10 @@
 // Seeds docs/content/*.json into Sanity. Safe to re-run: every document has a
 // deterministic _id and is written with createOrReplace in one transaction.
-// Re-running overwrites edits made in the Studio to the seeded documents.
+// It refuses to run once films exist, because re-running overwrites Studio
+// edits and ordering. Override with --force.
 //
 //   npm run seed
+//   npm run seed -- --force
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -206,7 +208,24 @@ const transaction = client.transaction();
 const docs: IdentifiedSanityDocumentStub[] = [settingsDoc, ...filmDocs, ...journeyDocs];
 for (const doc of docs) transaction.createOrReplace(doc);
 
+const force = process.argv.includes("--force");
+
 async function main() {
+  // Raw perspective (the default for this API version): drafts count too.
+  const existing = await client.fetch<number>(`count(*[_type == "film"])`);
+  if (existing > 0) {
+    if (!force) {
+      fail(
+        `${projectId}/${dataset} already has ${existing} film(s), so nothing was written.\n` +
+          `  Re-seeding replaces every seeded document: Studio edits, hidden/featured flags and\n` +
+          `  drag-and-drop ordering are lost. To do it anyway: npm run seed -- --force`,
+      );
+    }
+    console.warn(
+      `⚠ --force: overwriting ${existing} existing film(s). Studio edits and ordering on seeded documents will be lost.`,
+    );
+  }
+
   console.log(`Seeding ${projectId}/${dataset} …`);
   await transaction.commit({ visibility: "sync" });
   console.log(`✓ 1 siteSettings, ${filmDocs.length} films, ${journeyDocs.length} journey steps`);

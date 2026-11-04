@@ -7,20 +7,28 @@ import Hero from "@/components/Hero";
 import Journey from "@/components/Journey";
 import Marquee from "@/components/Marquee";
 import WorkGrid from "@/components/WorkGrid";
+import { getBtsFrames, getFilms, getJourney, getSettings } from "@/lib/queries";
 
-// Sections in SPEC §5 order. TODO: fetch content from Sanity and pass it down.
-export default function Home() {
+export default async function Home() {
+  const [settings, films, journey, frames] = await Promise.all([
+    getSettings(),
+    getFilms(),
+    getJourney(),
+    getBtsFrames(),
+  ]);
+
+  // Sections in SPEC §5 order. Each one copes with missing data.
   return (
     <main>
-      <Hero />
+      <Hero settings={settings} />
       <Marquee />
-      <WorkGrid />
-      <GradeLab />
-      <About />
-      <Journey />
-      <FilmStrip />
-      <Clients />
-      <Contact />
+      <WorkGrid films={films} />
+      <GradeLab image={settings?.gradeLabImage ?? null} />
+      <About settings={settings} />
+      <Journey steps={journey} quote={settings?.quote ?? null} />
+      <FilmStrip frames={frames} />
+      <Clients clients={settings?.clients ?? []} />
+      <Contact settings={settings} />
     </main>
   );
 }
