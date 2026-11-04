@@ -1,7 +1,7 @@
 import { createImageUrlBuilder } from "@sanity/image-url";
 import { dataset, projectId } from "@/sanity/env";
 import type { Film, SanityImage } from "@/lib/types";
-import { youTubeThumbnail } from "@/lib/youtube";
+import { YOUTUBE_THUMBNAIL_SIZE, youTubeThumbnail } from "@/lib/youtube";
 
 // Kept apart from lib/sanity.client.ts so client components can build image
 // URLs without bundling the Sanity query client.
@@ -34,9 +34,12 @@ export function sanityImageProps(
   };
 }
 
-/** Card thumbnail: the Sanity image if set, otherwise YouTube's maxres frame. */
+/** Card thumbnail: the Sanity image if set, otherwise the best YouTube frame (chosen in getFilms). */
 export function filmThumbnailProps(film: Film): ImageProps {
   if (film.thumbnail) return sanityImageProps(film.thumbnail, 1280);
-  // TODO(Step 6): fall back to hqdefault when maxresdefault 404s (needs onError, client-side).
-  return { src: youTubeThumbnail(film.youtubeId), width: 1280, height: 720, alt: "" };
+  return youTubeThumbnailProps(film.youtubeId, film.youtubeThumbnail);
+}
+
+export function youTubeThumbnailProps(id: string, quality: "maxresdefault" | "hqdefault"): ImageProps {
+  return { src: youTubeThumbnail(id, quality), ...YOUTUBE_THUMBNAIL_SIZE[quality], alt: "" };
 }

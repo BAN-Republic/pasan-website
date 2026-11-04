@@ -12,6 +12,10 @@ export const FILM_CATEGORIES = [
 
 export type FilmCategory = (typeof FILM_CATEGORIES)[number]["value"];
 
+export function categoryLabel(category: FilmCategory): string {
+  return FILM_CATEGORIES.find((c) => c.value === category)?.title ?? category;
+}
+
 export const FILM_ROLES = [
   "Director",
   "Cinematographer",
@@ -50,6 +54,8 @@ export interface Film {
   youtubeUrl: string;
   /** Derived from youtubeUrl at fetch time (lib/youtube.ts). */
   youtubeId: string;
+  /** Best YouTube thumbnail that exists for this video, checked at fetch time. */
+  youtubeThumbnail: "maxresdefault" | "hqdefault";
   client: string;
   product: string | null;
   category: FilmCategory;
@@ -102,6 +108,7 @@ export interface SiteSettings {
   showreelYoutubeUrl: string | null;
   /** Derived from showreelYoutubeUrl at fetch time. */
   showreelYoutubeId: string | null;
+  showreelYoutubeThumbnail: "maxresdefault" | "hqdefault" | null;
   email: string | null;
   location: string | null;
   availability: string | null;

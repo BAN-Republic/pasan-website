@@ -505,3 +505,7 @@ html[data-intro="skip"] #intro{display:none}
    (display:flex, and display:none under 760px): it sat at the far left on desktop and
    was invisible on phones. Keep it a centred block like the other calls. */
 #intro .call.rec{display:block}
+/* In the reference the modal's .wrap rows are grid items with margin:0 auto, so they
+   shrink to their content: the Close button sat mid-screen next to the clip ID and
+   Previous/Next bunched in the middle. Let them span the row as space-between intends. */
+.modal > .wrap{width:100%}

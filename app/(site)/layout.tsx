@@ -43,9 +43,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   const links: NavLink[] = [
     { href: "#home", label: "Home" },
     { href: "#work", label: "Portfolio" },
-    ...(settings?.showreelYoutubeId
-      ? [{ href: `https://www.youtube.com/watch?v=${settings.showreelYoutubeId}`, label: "Showreel", reel: true }]
-      : []),
+    ...(settings?.showreelYoutubeId ? [{ href: "#reel", label: "Showreel", reel: true }] : []),
     { href: "#grade", label: "Grade Lab" },
     { href: "#about", label: "About" },
     ...(journey.length ? [{ href: "#journey", label: "Journey" }] : []),
@@ -57,7 +55,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="site">
       <IntroScript />
-      <Intro />
+      <Intro name={settings?.name ?? null} />
       <div className="grain" aria-hidden="true" />
       <div className="vig" aria-hidden="true" />
       <Cursor />

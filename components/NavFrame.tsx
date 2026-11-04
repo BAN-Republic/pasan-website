@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { openReel } from "@/lib/player";
 
 const MenuContext = createContext<{ open: boolean; toggle: () => void }>({
   open: false,
@@ -34,9 +35,15 @@ export default function NavFrame({ children }: { children: ReactNode }) {
     return () => removeEventListener("scroll", onScroll);
   }, []);
 
-  // Choosing a link closes the mobile menu.
+  // Choosing a link closes the mobile menu; the Showreel link opens the modal.
   function onClick(event: MouseEvent<HTMLElement>) {
-    if ((event.target as Element).closest(".links a")) setOpen(false);
+    const link = (event.target as Element).closest(".links a");
+    if (!link) return;
+    setOpen(false);
+    if (link.hasAttribute("data-reel")) {
+      event.preventDefault();
+      openReel();
+    }
   }
 
   const className = ["nav", solid && "solid", open && "open"].filter(Boolean).join(" ");

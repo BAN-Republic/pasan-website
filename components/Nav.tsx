@@ -25,18 +25,16 @@ export default function Nav({ name, links }: NavProps) {
           {rest.length > 0 && <span>{rest.join(" ")}</span>}
         </a>
         <nav className="links" id="links" aria-label="Main">
-          {links.map((link, i) =>
-            link.reel ? (
-              // TODO(Step 6): open the showreel modal instead of YouTube.
-              <a key={link.href} href={link.href} data-reel="" target="_blank" rel="noopener">
-                {link.label}
-              </a>
-            ) : (
-              <a key={link.href} href={link.href} className={i === 0 ? "on" : undefined}>
-                {link.label}
-              </a>
-            ),
-          )}
+          {links.map((link, i) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className={i === 0 ? "on" : undefined}
+              data-reel={link.reel ? "" : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
         </nav>
         <div className="navr">
           <span className="rec mono" aria-hidden="true">

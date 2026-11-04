@@ -13,7 +13,19 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 type RollMode = "sound" | "silent" | "auto";
 
-export default function Intro() {
+interface IntroProps {
+  name: string | null;
+}
+
+/** "Pasan Rasantha Chandrasekera" → "P. R. Chandrasekera" */
+function directorCredit(name: string): string {
+  const parts = name.split(/\s+/).filter(Boolean);
+  const last = parts.pop() ?? "";
+  return [...parts.map((p) => `${p[0]}.`), last].join(" ");
+}
+
+export default function Intro({ name }: IntroProps) {
+  const firstName = name?.split(/\s+/)[0];
   const [removed, setRemoved] = useState(false);
   const [run, setRun] = useState(false);
   const [leaderOn, setLeaderOn] = useState(false);
@@ -150,7 +162,7 @@ export default function Intro() {
       <div className="half b"></div>
       <div className="stage">
         <div className="gate">
-          <p className="mono pre">Pasan Rasantha Chandrasekera presents</p>
+          {name && <p className="mono pre">{name} presents</p>}
           <h2>
             Visual <span>Storyteller</span>
           </h2>
@@ -191,7 +203,7 @@ export default function Intro() {
             <div className="row" style={{ gridTemplateColumns: "1fr" }}>
               <div>
                 <small>Production</small>
-                <span className="v">Pasan · Visual Storyteller</span>
+                <span className="v">{firstName ? `${firstName} · Visual Storyteller` : "Visual Storyteller"}</span>
               </div>
             </div>
             <div className="row" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
@@ -211,7 +223,7 @@ export default function Intro() {
             <div className="row" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
               <div>
                 <small>Director</small>
-                <span className="v">P. R. Chandrasekera</span>
+                <span className="v">{name ? directorCredit(name) : "—"}</span>
               </div>
               <div>
                 <small>Camera</small>

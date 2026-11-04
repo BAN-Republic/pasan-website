@@ -1,29 +1,43 @@
-import Image from "next/image";
-import { filmThumbnailProps } from "@/lib/image";
-import { FILM_CATEGORIES, type Film } from "@/lib/types";
+"use client";
 
-export function categoryLabel(category: Film["category"]): string {
-  return FILM_CATEGORIES.find((c) => c.value === category)?.title ?? category;
-}
+import Image from "next/image";
+import { useState } from "react";
+import { filmThumbnailProps, youTubeThumbnailProps } from "@/lib/image";
+import { categoryLabel, type Film } from "@/lib/types";
 
 interface FilmCardProps {
   film: Film;
+  /** Position in the full display order; gives the clip number. */
   index: number;
+  hidden: boolean;
+  onOpen: () => void;
 }
 
-// TODO(Step 6): open VideoModal on click.
-export default function FilmCard({ film, index }: FilmCardProps) {
-  const thumb = filmThumbnailProps(film);
+export default function FilmCard({ film, index, hidden, onOpen }: FilmCardProps) {
+  // getFilms already picks a YouTube thumbnail that exists; this is a backstop
+  // in case it disappears later (YouTube answers 404 + a grey placeholder).
+  const [fallback, setFallback] = useState(false);
+  const thumb = fallback ? youTubeThumbnailProps(film.youtubeId, "hqdefault") : filmThumbnailProps(film);
   const label = categoryLabel(film.category);
+
   return (
     <button
-      className="card"
+      className={hidden ? "card hide" : "card"}
       type="button"
+      data-id={film._id}
       data-cat={film.category}
       data-cur="Play"
       aria-label={`Play ${film.title}`}
+      onClick={onOpen}
     >
-      <Image {...thumb} alt={thumb.alt} sizes="(max-width: 760px) 100vw, 66vw" />
+      <Image
+        {...thumb}
+        alt={thumb.alt}
+        sizes="(max-width: 760px) 100vw, 66vw"
+        onError={() => {
+          if (!film.thumbnail) setFallback(true);
+        }}
+      />
       <span className="brk"></span>
       <span className="fr mono">
         <span>A001_C{String(index + 1).padStart(3, "0")}</span>

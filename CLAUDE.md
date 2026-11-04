@@ -17,7 +17,7 @@ Pasan must be able to add new films himself through an admin page, without touch
 - Contact form: Route Handler `app/api/contact/route.ts` sending with Resend
 
 ## Rules
-- Server components by default. Add `"use client"` only for: Intro, VideoModal, GradeLab, FilmStrip, Cursor, SoundToggle, WorkGrid filters, Contact form, ScrollTimecode, Toast, and the small client children of server components: NavFrame + Burger (Nav scroll-spy, solid state, burger menu), HeroFrame (letterbox, parallax, flare, aspect buttons, HUD lens), Timecode, ShowreelButton. Nav and Hero themselves stay server components so their links and copy are server-rendered. (Exception: `sanity/sanity.config.ts` is `"use client"` because the embedded Studio needs it.)
+- Server components by default. Add `"use client"` only for: Intro, VideoModal, GradeLab, FilmStrip, Cursor, SoundToggle, WorkGrid filters, Contact form, ScrollTimecode, Toast, FilmCard (rendered by WorkGrid; thumbnail fallback), and the small client children of server components: NavFrame + Burger (Nav scroll-spy, solid state, burger menu), HeroFrame (letterbox, parallax, flare, aspect buttons, HUD lens), Timecode, ShowreelButton. Nav and Hero themselves stay server components so their links and copy are server-rendered. (Exception: `sanity/sanity.config.ts` is `"use client"` because the embedded Studio needs it.)
 - Anything based on the date, time, sessionStorage or localStorage runs after mount (or in the inline script in `components/IntroScript.tsx`), never during render, to avoid hydration mismatches.
 - All content comes from Sanity through typed GROQ queries in `lib/queries.ts`. No hard-coded films, bio, journey or clients in components.
 - Types live in `lib/types.ts`. No `any`.
