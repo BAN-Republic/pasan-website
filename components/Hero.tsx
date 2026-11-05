@@ -25,7 +25,7 @@ export default function Hero({ settings }: HeroProps) {
     <HeroFrame>
       <div className="hero-media">
         {/* Above the fold: preloaded (Next 16 replaces `priority` with `preload`). */}
-        {hero && <Image {...hero} alt={hero.alt} preload sizes="(max-width: 760px) 100vw, 64vw" />}
+        {hero && <Image {...hero} alt={hero.alt} preload fetchPriority="high" sizes="(max-width: 760px) 100vw, 64vw" />}
       </div>
       <div className="flare" id="flare"></div>
       <div className="lb t"></div>

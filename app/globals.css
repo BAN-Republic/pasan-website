@@ -538,3 +538,42 @@ html[data-intro="skip"] #intro{display:none}
 .reach h3{font-size:34px}
 .btn2.social{display:inline-flex;align-items:center;gap:10px}
 .btn2.social svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}
+/* reference bug: .btn2.ghost (same specificity, later) kept its muted text on the gold hover fill */
+.btn2.ghost:hover{color:var(--ink);border-color:var(--gold)}
+/* 404 (app/not-found.tsx) */
+.nf{min-height:100svh;display:grid;grid-template-rows:auto 1fr auto}
+.nf-bar{height:clamp(28px,7vh,72px);background:#000}
+.nf-body{align-self:center;display:grid;gap:18px;justify-items:start;padding-block:48px}
+.nf h1{font-size:clamp(56px,10vw,150px)}
+.nf h1 span{color:var(--gold)}
+.nf-copy{color:#cfcac2;max-width:46ch;font-size:clamp(15px,1.4vw,18px)}
+.nf-tc{color:var(--mute)}
+.nf-home{margin-top:10px;padding:16px 28px}
+/* very narrow phones (≤359px): tighten the nav row so it never overflows */
+@media (max-width:359px){
+  .nav .wrap{gap:10px}
+  .navr{gap:8px}
+  .brand.has-mark{column-gap:8px}
+  .brand span{letter-spacing:.16em}
+}
+@media (max-width:359px){
+  .presets button{padding:11px 10px;gap:6px}
+  .presets button span{letter-spacing:.04em;overflow-wrap:anywhere}
+}
+/* nav: this site has more links than the reference (Showreel, Journey, BTS Journal, Clients).
+   Keep every label on one line above the burger breakpoint (1080px) */
+.links a,.sound,.rec{white-space:nowrap}
+@media (min-width:1081px) and (max-width:1360px){.links{gap:clamp(14px,1.6vw,34px)}}
+@media (min-width:1081px) and (max-width:1280px){.nav .rec{display:none}}
+@media (min-width:1081px) and (max-width:1180px){.links{letter-spacing:.1em}}
+/* contact: "EXTRAORDINARY" needs the full width below ~970px, or it runs under the form/card */
+@media (max-width:1000px){.cgrid{grid-template-columns:1fr}}
+/* hero: keep "STORYTELLER" inside the frame on ≤359px phones */
+@media (max-width:359px){.hero h1{font-size:21vw}}
+/* a11y: the reference's #6f6a62 hint was 3.8:1 on the intro black; #7d776e is the closest tone at 4.6:1 */
+.gate .hint{color:#7d776e}
+/* a11y contrast (reference values were below WCAG AA): filter counts .6 → .85 opacity (5.6:1),
+   client outlines .3 → .45 stroke alpha (≈4:1, large text needs 3:1) */
+.chips .n{opacity:.85}
+.clients span{-webkit-text-stroke-color:rgba(245,245,245,.45)}
+.clients span:hover{-webkit-text-stroke-color:var(--gold)}

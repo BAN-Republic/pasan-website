@@ -6,27 +6,47 @@ import IntroScript from "@/components/IntroScript";
 import Nav, { type NavLink } from "@/components/Nav";
 import ScrollTimecode from "@/components/ScrollTimecode";
 import Toast from "@/components/Toast";
-import { sanityImageProps } from "@/lib/image";
+import { socialLinks } from "@/components/SocialIcon";
+import { ogImageProps } from "@/lib/image";
+import { siteOrigin } from "@/lib/site";
 import { getBtsFrames, getJourney, getSettings } from "@/lib/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   const name = settings?.name ?? "Portfolio";
-  const description = settings?.tagline ?? undefined;
-  const ogImage = settings?.heroImage ? sanityImageProps(settings.heroImage, 1200, name) : null;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const role = settings?.roles?.[0] ?? null;
+  const title = role ? `${name} · ${role}` : name;
+  const description =
+    [settings?.tagline, role && settings?.location ? `${role} based in ${settings.location}.` : null]
+      .filter(Boolean)
+      .join(" ") || undefined;
+  const ogImage = settings?.heroImage ? ogImageProps(settings.heroImage, name) : null;
+  const origin = siteOrigin();
+  const socials = socialLinks(settings?.socials ?? null);
   return {
-    ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
-    title: { default: name, template: `%s · ${name}` },
+    // Without NEXT_PUBLIC_SITE_URL the canonical and og:url are left out rather than guessed.
+    ...(origin ? { metadataBase: new URL(origin), alternates: { canonical: "/" } } : {}),
+    title: { default: title, template: `%s · ${name}` },
     description,
+    applicationName: name,
+    authors: [{ name, ...(socials[0] ? { url: socials[0].url } : {}) }],
+    creator: name,
     openGraph: {
       type: "website",
-      title: name,
+      ...(origin ? { url: "/" } : {}),
+      siteName: name,
+      title,
       description,
-      ...(ogImage
-        ? { images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }] }
-        : {}),
+      locale: "en_US",
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(ogImage ? { images: [{ url: ogImage.url, alt: ogImage.alt }] } : {}),
+    },
+    robots: { index: true, follow: true },
   };
 }
 

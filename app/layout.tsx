@@ -47,7 +47,8 @@ const notoSansSinhala = Noto_Sans_Sinhala({
   preload: false,
 });
 
-// TODO: generate from siteSettings (SPEC §8).
+// Fallback only: the public site's metadata comes from siteSettings in
+// app/(site)/layout.tsx, and the Studio sets its own (noindex) in app/admin.
 export const metadata: Metadata = {
   title: "Pasan Rasantha Chandrasekera",
 };

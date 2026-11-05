@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
-    "upload-images": "tsx scripts/upload-images.ts"
+    "upload-images": "tsx scripts/upload-images.ts",
+    "test:webhook": "tsx scripts/test-webhook.ts"
   },
   "dependencies": {
     "@sanity/image-url": "^2.1.1",
@@ -25,6 +26,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@sanity/webhook": "^4.0.4",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

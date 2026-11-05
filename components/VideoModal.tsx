@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { MixedText } from "@/lib/lang";
 import { closePlayer, getPlayer, stepFilm, subscribePlayer, syncFromHash } from "@/lib/player";
 import { tick } from "@/lib/sound";
 import { categoryLabel, type Film } from "@/lib/types";
@@ -149,7 +150,9 @@ export default function VideoModal({ films, showreelId }: VideoModalProps) {
               <p className="mono gold" id="pdCat">
                 {label}
               </p>
-              <h2 id="pdTitle">{film.title}</h2>
+              <h2 id="pdTitle">
+                <MixedText text={film.title} />
+              </h2>
               <p id="pdLog">
                 {film.client}
                 {film.product && film.product !== film.client ? ` · ${film.product}` : ""}

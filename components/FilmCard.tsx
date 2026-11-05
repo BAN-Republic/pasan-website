@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { filmThumbnailProps, youTubeThumbnailProps } from "@/lib/image";
+import { MixedText } from "@/lib/lang";
 import { categoryLabel, type Film } from "@/lib/types";
 
 interface FilmCardProps {
@@ -27,19 +28,22 @@ export default function FilmCard({ film, index, hidden, onOpen }: FilmCardProps)
       data-id={film._id}
       data-cat={film.category}
       data-cur="Play"
-      aria-label={`Play ${film.title}`}
       onClick={onOpen}
     >
+      {/* The button's name is its visible text plus this prefix ("Play <title> <category> · <client>"),
+          so it matches what sighted voice-control users see. The thumbnail is decorative here:
+          the title right below names the film, so its alt would only repeat it. */}
+      <span className="sr-only">Play </span>
       <Image
         {...thumb}
-        alt={thumb.alt}
+        alt=""
         sizes="(max-width: 760px) 100vw, 66vw"
         onError={() => {
           if (!film.thumbnail) setFallback(true);
         }}
       />
       <span className="brk"></span>
-      <span className="fr mono">
+      <span className="fr mono" aria-hidden="true">
         <span>A001_C{String(index + 1).padStart(3, "0")}</span>
         <span>{label}</span>
       </span>
@@ -49,7 +53,9 @@ export default function FilmCard({ film, index, hidden, onOpen }: FilmCardProps)
         </svg>
       </span>
       <span className="meta">
-        <span className="ct">{film.title}</span>
+        <span className="ct">
+          <MixedText text={film.title} />
+        </span>
         <span className="mono">
           {label} · {film.client}
         </span>

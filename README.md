@@ -25,3 +25,33 @@ The "Pitch your story" form picks its mode on the server at build/render time
 To switch to direct sending once the domain is verified in Resend: add the three
 variables in Vercel → Project → Settings → Environment Variables (and in `.env.local`
 for local work), then redeploy (or restart `npm run dev`). No code change is needed.
+
+## Publishing refresh (Sanity webhook)
+
+Pages are cached. When Pasan publishes in the Studio, a Sanity webhook calls
+`/api/revalidate`, which checks the signature and expires the cache, so the next visit
+shows the change. Set it up once in sanity.io/manage → the project → API → Webhooks →
+Create webhook:
+
+| Field | Value |
+|---|---|
+| Name | Revalidate website |
+| URL | `https://YOUR-DOMAIN/api/revalidate` |
+| Dataset | `production` |
+| Trigger on | Create, Update, Delete |
+| Filter | leave empty (all document types, per SPEC §7) |
+| Projection | `{_type, _id}` |
+| Status | Enabled |
+| HTTP method | POST |
+| API version | `v2025-02-19` |
+| Drafts | off · Versions | off |
+| Secret | the same value as `SANITY_REVALIDATE_SECRET` |
+
+Test it (uses the secret from `.env.local`):
+
+```bash
+npm run test:webhook                          # against http://localhost:3000
+npm run test:webhook -- https://YOUR-DOMAIN   # against the live site
+```
+
+It sends a correctly signed request (expects 200) and two bad ones (expect 401).

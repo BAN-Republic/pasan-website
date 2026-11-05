@@ -25,7 +25,7 @@ Pasan must be able to add new films himself through an admin page, without touch
 - Thumbnails: Sanity image if set, otherwise `https://i.ytimg.com/vi/{id}/maxresdefault.jpg` with fallback to `hqdefault.jpg`.
 - Images through `next/image`. Fonts through `next/font/google` (Bebas Neue, Inter, JetBrains Mono, Mrs Saint Delafield, Noto Sans Sinhala).
 - Respect `prefers-reduced-motion`: skip the intro and disable animations.
-- Accessibility: keyboard focus visible, modals trap focus and close on Escape, all images have alt text.
+- Accessibility: keyboard focus visible, modals trap focus and close on Escape. Meaningful images need alt text; decorative images use `alt=""` (e.g. film-card thumbnails, where the visible title is the button's label).
 - Mobile first. No horizontal scroll at 360px width.
 - Secrets only in `.env.local` (never committed). Keep `.env.example` up to date.
 - Never invent facts about Pasan (clients, awards, numbers). Only use what is in `docs/content` or Sanity.

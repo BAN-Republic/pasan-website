@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next";
+import { siteOrigin } from "@/lib/site";
 
-// TODO: add sitemap URL from NEXT_PUBLIC_SITE_URL (SPEC §8).
+// The Studio (/admin) and the API routes stay out of search results.
 export default function robots(): MetadataRoute.Robots {
-  return { rules: { userAgent: "*", allow: "/", disallow: "/admin" } };
+  const origin = siteOrigin();
+  return {
+    rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] },
+    ...(origin ? { sitemap: `${origin}/sitemap.xml`, host: origin } : {}),
+  };
 }

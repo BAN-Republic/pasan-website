@@ -26,7 +26,8 @@ export default function Nav({ name, links }: NavProps) {
           {/* Just the P mark: the full logo's tagline would be unreadable at nav size. */}
           <Image src={pMark} alt="" width={34} height={35} className="mark" loading="eager" />
           <b>{first.toUpperCase()}</b>
-          {rest.length > 0 && <span>{rest.join(" ")}</span>}
+          {/* The space keeps the accessible text "PASAN RASANTHA…", not "PASANRASANTHA…" (grid hides it). */}
+          {rest.length > 0 && <> <span>{rest.join(" ")}</span></>}
         </a>
         <nav className="links" id="links" aria-label="Main">
           {links.map((link, i) => (

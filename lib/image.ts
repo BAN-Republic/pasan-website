@@ -82,3 +82,21 @@ export function filmThumbnailProps(film: Film): ImageProps {
 export function youTubeThumbnailProps(id: string, quality: "maxresdefault" | "hqdefault"): ImageProps {
   return { src: youTubeThumbnail(id, quality), ...YOUTUBE_THUMBNAIL_SIZE[quality], alt: "" };
 }
+
+/**
+ * 1200×630 JPEG for Open Graph / social cards, cropped around the editor's hotspot.
+ * JPEG rather than auto-format: some link-preview crawlers don't handle WebP/AVIF.
+ */
+export function ogImageProps(image: SanityImage, fallbackAlt: string) {
+  return {
+    url: builder.image(image).width(1200).height(630).fit("crop").format("jpg").quality(82).url(),
+    width: 1200,
+    height: 630,
+    alt: image.alt || fallbackAlt,
+  };
+}
+
+/** Absolute URL of a Sanity image at a given width, for structured data. */
+export function sanityImageUrl(image: SanityImage, width: number): string {
+  return builder.image(image).width(width).format("jpg").url();
+}
