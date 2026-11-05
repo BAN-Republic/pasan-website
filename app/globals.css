@@ -533,3 +533,8 @@ html[data-intro="skip"] #intro{display:none}
 .hp{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
 .submit:disabled{opacity:.65;cursor:progress}
 .wrapcard h3:focus{outline:none}
+/* contact: socials card shown instead of the form when there's no way to send (no Resend, no email) */
+.reach{background:rgba(11,11,11,.75);backdrop-filter:blur(6px);border:1px solid var(--line);padding:clamp(20px,3vw,32px);display:grid;gap:16px}
+.reach h3{font-size:34px}
+.btn2.social{display:inline-flex;align-items:center;gap:10px}
+.btn2.social svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}

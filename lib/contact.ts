@@ -48,3 +48,25 @@ export function fieldErrors(error: z.ZodError): PitchErrors {
 export type ContactResponse =
   | { ok: true }
   | { ok: false; error: string; fields?: PitchErrors };
+
+/** Subject line, shared by the Resend email and the mailto fallback. */
+export function pitchSubject(pitch: Pick<Pitch, "type" | "name">): string {
+  return `Pitch: ${pitch.type} — ${pitch.name}`;
+}
+
+/** Plain-text body with every field, shared by the Resend email, mailto and "Copy pitch". */
+export function pitchText(pitch: Pick<Pitch, "name" | "email" | "type" | "message">): string {
+  return [
+    `Name: ${pitch.name}`,
+    `Email: ${pitch.email}`,
+    `Project: ${pitch.type}`,
+    ``,
+    `The story:`,
+    pitch.message,
+  ].join("\n");
+}
+
+/** mailto: link that opens the visitor's email app with the pitch filled in. */
+export function pitchMailto(to: string, pitch: Pick<Pitch, "name" | "email" | "type" | "message">): string {
+  return `mailto:${to}?subject=${encodeURIComponent(pitchSubject(pitch))}&body=${encodeURIComponent(pitchText(pitch))}`;
+}

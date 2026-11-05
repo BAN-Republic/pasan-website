@@ -9,6 +9,7 @@ import JsonLd from "@/components/JsonLd";
 import Marquee from "@/components/Marquee";
 import VideoModal from "@/components/VideoModal";
 import WorkGrid from "@/components/WorkGrid";
+import { directSendEnabled } from "@/lib/contact-mode";
 import { getBtsFrames, getFilms, getJourney, getSettings } from "@/lib/queries";
 
 export default async function Home() {
@@ -32,7 +33,7 @@ export default async function Home() {
         <Journey steps={journey} intro={settings?.journeyIntro ?? null} quote={settings?.quote ?? null} />
         <FilmStrip frames={frames} />
         <Clients clients={settings?.clients ?? []} />
-        <Contact settings={settings} />
+        <Contact settings={settings} directSend={directSendEnabled()} />
       </main>
       <VideoModal films={films} showreelId={settings?.showreelYoutubeId ?? null} />
       <JsonLd settings={settings} films={films} />

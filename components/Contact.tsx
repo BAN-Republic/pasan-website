@@ -2,11 +2,14 @@
 
 import Image from "next/image";
 import { useRef, useState, type FormEvent } from "react";
-import { SOCIAL_LABELS, socialLinks } from "@/components/SocialIcon";
+import SocialIcon, { SOCIAL_LABELS, socialLinks } from "@/components/SocialIcon";
 import {
   PROJECT_TYPES,
   fieldErrors,
+  pitchMailto,
   pitchSchema,
+  pitchSubject,
+  pitchText,
   type ContactResponse,
   type Pitch,
   type PitchErrors,
@@ -19,12 +22,21 @@ import type { SiteSettings } from "@/lib/types";
 
 interface ContactProps {
   settings: SiteSettings | null;
+  /** Decided on the server (lib/contact-mode.ts): true once the Resend env vars are set. */
+  directSend: boolean;
 }
+
+/**
+ * direct:  POST to /api/contact, which sends through Resend.
+ * mailto:  no Resend config yet; open the visitor's email app with the pitch filled in.
+ * socials: neither Resend nor a public email; show the social links instead of a form.
+ */
+type Mode = "direct" | "mailto" | "socials";
 
 type Status =
   | { state: "idle" }
   | { state: "sending" }
-  | { state: "sent"; pitch: Pitch; date: string }
+  | { state: "sent"; pitch: Pitch; date: string; via: "direct" | "mailto" }
   | { state: "error"; message: string; mailto: string | null };
 
 const FIELDS: { id: string; name: PitchField }[] = [
@@ -40,11 +52,12 @@ function today() {
   return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${String(d.getFullYear()).slice(2)}`;
 }
 
-export default function Contact({ settings }: ContactProps) {
+export default function Contact({ settings, directSend }: ContactProps) {
   const bg = settings?.contactImage ? sanityImageProps(settings.contactImage, 1400) : null;
   const socials = socialLinks(settings?.socials ?? null);
   const email = settings?.email ?? null;
   const firstName = settings?.name?.split(" ")[0];
+  const mode: Mode = directSend ? "direct" : email ? "mailto" : "socials";
 
   const [status, setStatus] = useState<Status>({ state: "idle" });
   const [errors, setErrors] = useState<PitchErrors>({});
@@ -59,14 +72,6 @@ export default function Contact({ settings }: ContactProps) {
     } catch {
       toast("Select the address and copy it manually");
     }
-  }
-
-  // Prefilled email to fall back on when sending fails.
-  function mailtoFor(draft: Record<string, string>): string | null {
-    if (!email) return null;
-    const subject = `${draft.type || "Project"} pitch${draft.name ? ` from ${draft.name}` : ""}`;
-    const body = `${draft.message ?? ""}\n\n${draft.name ?? ""}`.trim();
-    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   function focusFirstError(found: PitchErrors) {
@@ -88,6 +93,15 @@ export default function Contact({ settings }: ContactProps) {
       return;
     }
     setErrors({});
+    const pitch = parsed.data;
+
+    if (mode !== "direct") {
+      // Fallback: hand the pitch to the visitor's email app. A filled honeypot (a bot)
+      // gets the same card without anything being opened.
+      if (email && !pitch.company) window.location.assign(pitchMailto(email, pitch));
+      showSlated(pitch, "mailto");
+      return;
+    }
     setStatus({ state: "sending" });
 
     try {
@@ -98,9 +112,7 @@ export default function Contact({ settings }: ContactProps) {
       });
       const body = (await res.json().catch(() => null)) as ContactResponse | null;
       if (res.ok && body?.ok) {
-        clap();
-        setStatus({ state: "sent", pitch: parsed.data, date: today() });
-        requestAnimationFrame(() => slatedRef.current?.focus());
+        showSlated(pitch, "direct");
         return;
       }
       if (body && !body.ok && body.fields) {
@@ -110,14 +122,33 @@ export default function Contact({ settings }: ContactProps) {
       setStatus({
         state: "error",
         message: body && !body.ok ? body.error : "Your pitch couldn't be sent right now.",
-        mailto: mailtoFor(data),
+        mailto: email ? pitchMailto(email, pitch) : null,
       });
     } catch {
       setStatus({
         state: "error",
         message: "Your pitch couldn't be sent. Check your connection and try again.",
-        mailto: mailtoFor(data),
+        mailto: email ? pitchMailto(email, pitch) : null,
       });
+    }
+  }
+
+  function showSlated(pitch: Pitch, via: "direct" | "mailto") {
+    clap();
+    setStatus({ state: "sent", pitch, date: today(), via });
+    requestAnimationFrame(() => slatedRef.current?.focus());
+  }
+
+  // For visitors without an email app: the whole pitch, ready to paste anywhere.
+  async function copyPitch(pitch: Pitch) {
+    const text = [email ? `To: ${email}` : null, `Subject: ${pitchSubject(pitch)}`, "", pitchText(pitch)]
+      .filter((line) => line !== null)
+      .join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Pitch copied");
+    } catch {
+      toast("Couldn't copy. Select the text and copy it manually");
     }
   }
 
@@ -182,7 +213,7 @@ export default function Contact({ settings }: ContactProps) {
                 <span>{settings.location}</span>
               </div>
             )}
-            {socials.length > 0 && (
+            {socials.length > 0 && mode !== "socials" && (
               <div className="row">
                 <span className="mono">Follow</span>
                 <span style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
@@ -203,122 +234,161 @@ export default function Contact({ settings }: ContactProps) {
           </div>
         </div>
 
-        <form id="pitch" ref={formRef} noValidate onSubmit={onSubmit} aria-labelledby="pitchTitle">
-          {/* Screen readers hear the outcome here; the visible states are below. */}
-          <p className="sr-only" aria-live="polite">
-            {status.state === "sending"
-              ? "Sending your pitch…"
-              : sent
-                ? "Slated. Your pitch has been sent."
-                : status.state === "error"
-                  ? status.message
-                  : ""}
-          </p>
-
-          <div id="formFields" style={{ display: "grid", gap: 16 }} hidden={Boolean(sent)}>
-            <div>
-              <p className="mono gold">Call sheet</p>
-              <h3 id="pitchTitle">Pitch your story</h3>
-            </div>
-            <div className="field">
-              <label htmlFor="fname">
-                Your name
-                <input {...fieldProps("name", "fname")} autoComplete="name" placeholder="Name and company" />
-              </label>
-              {fieldError("name", "fname")}
-            </div>
-            <div className="field">
-              <label htmlFor="femail">
-                Email
-                <input {...fieldProps("email", "femail")} type="email" autoComplete="email" placeholder="you@studio.com" />
-              </label>
-              {fieldError("email", "femail")}
-            </div>
-            <div className="field">
-              <label htmlFor="ftype">
-                Project
-                <select {...fieldProps("type", "ftype")} defaultValue={PROJECT_TYPES[0]}>
-                  {PROJECT_TYPES.map((type) => (
-                    <option key={type}>{type}</option>
-                  ))}
-                </select>
-              </label>
-              {fieldError("type", "ftype")}
-            </div>
-            <div className="field">
-              <label htmlFor="fmsg">
-                The story
-                <textarea
-                  {...fieldProps("message", "fmsg")}
-                  placeholder="What should people feel when the screen goes dark?"
-                />
-              </label>
-              {fieldError("message", "fmsg")}
-            </div>
-            {/* Honeypot: off-screen, skipped by keyboard and screen readers, left empty by people. */}
-            <div className="hp" aria-hidden="true">
-              <label htmlFor="fcompany">
-                Company
-                <input id="fcompany" name="company" type="text" tabIndex={-1} autoComplete="off" />
-              </label>
-            </div>
-            {status.state === "error" && (
-              <p className="err" id="err" role="alert">
-                {status.message}{" "}
-                {email && status.mailto ? (
-                  <>
-                    {/try again/i.test(status.message) ? "Or email" : "Please try again, or email"}{" "}
-                    <a href={status.mailto}>{email}</a> directly.
-                  </>
-                ) : /try again/i.test(status.message) ? null : (
-                  "Please try again in a moment."
-                )}
-              </p>
-            )}
-            <button
-              className="submit"
-              type="submit"
-              data-cur="Action"
-              disabled={status.state === "sending"}
-              aria-disabled={status.state === "sending"}
-            >
-              {status.state === "sending" ? "Slating…" : "Slate it ⟶"}
-            </button>
-          </div>
-
-          {sent && (
-            <div className="wrapcard" id="wrapcard">
+        {mode === "socials" ? (
+          socials.length > 0 && (
+            <div className="reach" id="reach">
               <div>
-                <p className="mono gold">Slated</p>
-                <h3 ref={slatedRef} tabIndex={-1}>
-                  Scene set. Pitch sent.
-                </h3>
+                <p className="mono gold">Call sheet</p>
+                <h3>Pitch your story</h3>
               </div>
-              <div className="slate" id="slate">
-                {[
-                  ["Production", sent.pitch.name],
-                  ["Scene", sent.pitch.type],
-                  ["Take", "01"],
-                  ["Date", sent.date],
-                ].map(([label, value]) => (
-                  <div key={label}>
-                    <span>{label}</span>
-                    <b>{value}</b>
-                  </div>
-                ))}
-              </div>
-              <p style={{ color: "#cfcac2", fontSize: 14 }}>
-                Thanks, {sent.pitch.name}. Your pitch is on its way{firstName ? ` to ${firstName}` : ""}, and the reply
-                will come to <b style={{ fontWeight: 500 }}>{sent.pitch.email}</b>.
+              <p style={{ color: "#cfcac2", fontSize: 15 }}>
+                Send a message{firstName ? ` to ${firstName}` : ""} on social and tell the story there.
               </p>
               <div className="btnrow">
-                <button type="button" className="btn2 ghost" id="newTake" onClick={newTake}>
-                  New take
-                </button>
+                {socials.map(({ key, url }) => (
+                  <a key={key} className="btn2 social" href={url} target="_blank" rel="noopener" data-cur="Open">
+                    <SocialIcon name={key} />
+                    {SOCIAL_LABELS[key]} ↗
+                  </a>
+                ))}
               </div>
             </div>
-          )}
-        </form>
+          )
+        ) : (
+          <form id="pitch" ref={formRef} noValidate onSubmit={onSubmit} aria-labelledby="pitchTitle">
+            {/* Screen readers hear the outcome here; the visible states are below. */}
+            <p className="sr-only" aria-live="polite">
+              {status.state === "sending"
+                ? "Sending your pitch…"
+                : sent
+                  ? sent.via === "mailto"
+                    ? "Slated. Your email app has your pitch ready. Just hit send."
+                    : "Slated. Your pitch has been sent."
+                  : status.state === "error"
+                    ? status.message
+                    : ""}
+            </p>
+
+            <div id="formFields" style={{ display: "grid", gap: 16 }} hidden={Boolean(sent)}>
+              <div>
+                <p className="mono gold">Call sheet</p>
+                <h3 id="pitchTitle">Pitch your story</h3>
+              </div>
+              <div className="field">
+                <label htmlFor="fname">
+                  Your name
+                  <input {...fieldProps("name", "fname")} autoComplete="name" placeholder="Name and company" />
+                </label>
+                {fieldError("name", "fname")}
+              </div>
+              <div className="field">
+                <label htmlFor="femail">
+                  Email
+                  <input {...fieldProps("email", "femail")} type="email" autoComplete="email" placeholder="you@studio.com" />
+                </label>
+                {fieldError("email", "femail")}
+              </div>
+              <div className="field">
+                <label htmlFor="ftype">
+                  Project
+                  <select {...fieldProps("type", "ftype")} defaultValue={PROJECT_TYPES[0]}>
+                    {PROJECT_TYPES.map((type) => (
+                      <option key={type}>{type}</option>
+                    ))}
+                  </select>
+                </label>
+                {fieldError("type", "ftype")}
+              </div>
+              <div className="field">
+                <label htmlFor="fmsg">
+                  The story
+                  <textarea
+                    {...fieldProps("message", "fmsg")}
+                    placeholder="What should people feel when the screen goes dark?"
+                  />
+                </label>
+                {fieldError("message", "fmsg")}
+              </div>
+              {/* Honeypot: off-screen, skipped by keyboard and screen readers, left empty by people. */}
+              <div className="hp" aria-hidden="true">
+                <label htmlFor="fcompany">
+                  Company
+                  <input id="fcompany" name="company" type="text" tabIndex={-1} autoComplete="off" />
+                </label>
+              </div>
+              {status.state === "error" && (
+                <p className="err" id="err" role="alert">
+                  {status.message}{" "}
+                  {email && status.mailto ? (
+                    <>
+                      {/try again/i.test(status.message) ? "Or email" : "Please try again, or email"}{" "}
+                      <a href={status.mailto}>{email}</a> directly.
+                    </>
+                  ) : /try again/i.test(status.message) ? null : (
+                    "Please try again in a moment."
+                  )}
+                </p>
+              )}
+              <button
+                className="submit"
+                type="submit"
+                data-cur="Action"
+                disabled={status.state === "sending"}
+                aria-disabled={status.state === "sending"}
+              >
+                {status.state === "sending" ? "Slating…" : "Slate it ⟶"}
+              </button>
+            </div>
+
+            {sent && (
+              <div className="wrapcard" id="wrapcard">
+                <div>
+                  <p className="mono gold">Slated</p>
+                  <h3 ref={slatedRef} tabIndex={-1}>
+                    {sent.via === "mailto" ? "Scene set." : "Scene set. Pitch sent."}
+                  </h3>
+                  {sent.via === "mailto" && (
+                    <p style={{ fontSize: 17, marginTop: 6 }}>Your email app has your pitch ready — just hit send.</p>
+                  )}
+                </div>
+                <div className="slate" id="slate">
+                  {[
+                    ["Production", sent.pitch.name],
+                    ["Scene", sent.pitch.type],
+                    ["Take", "01"],
+                    ["Date", sent.date],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <span>{label}</span>
+                      <b>{value}</b>
+                    </div>
+                  ))}
+                </div>
+                {sent.via === "mailto" ? (
+                  <p style={{ color: "#cfcac2", fontSize: 14 }}>
+                    No email app opened? Copy the pitch and send it to{" "}
+                    <b style={{ fontWeight: 500, overflowWrap: "anywhere" }}>{email}</b> from any mail account.
+                  </p>
+                ) : (
+                  <p style={{ color: "#cfcac2", fontSize: 14 }}>
+                    Thanks, {sent.pitch.name}. Your pitch is on its way{firstName ? ` to ${firstName}` : ""}, and the
+                    reply will come to <b style={{ fontWeight: 500 }}>{sent.pitch.email}</b>.
+                  </p>
+                )}
+                <div className="btnrow">
+                  {sent.via === "mailto" && (
+                    <button type="button" className="btn2" id="copyPitch" onClick={() => copyPitch(sent.pitch)}>
+                      Copy pitch
+                    </button>
+                  )}
+                  <button type="button" className="btn2 ghost" id="newTake" onClick={newTake}>
+                    New take
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+        )}
       </div>
     </section>
   );

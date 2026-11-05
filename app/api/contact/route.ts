@@ -1,8 +1,11 @@
 import { Resend } from "resend";
-import { fieldErrors, pitchSchema, type ContactResponse, type Pitch } from "@/lib/contact";
+import { fieldErrors, pitchSchema, pitchSubject, pitchText, type ContactResponse, type Pitch } from "@/lib/contact";
+import { directSendEnabled } from "@/lib/contact-mode";
 
-// POST /api/contact — "Pitch your story" form (SPEC §6).
-// 200 sent (or honeypot) · 400 invalid · 429 rate limited · 500 not sent.
+// POST /api/contact — "Pitch your story" form (SPEC §6), direct-send mode.
+// 200 sent (or honeypot) · 400 invalid · 429 rate limited · 500 not sent · 503 not configured.
+// While the Resend env vars are missing the form never calls this route: it opens the
+// visitor's email app instead (see lib/contact-mode.ts).
 
 // ---------- rate limit ----------
 // 5 requests per IP per 10 minutes, kept in this server instance's memory.
@@ -51,10 +54,7 @@ function emailBodies(pitch: Pitch) {
   const text = [
     `New pitch from the website`,
     ``,
-    ...rows.map(([k, v]) => `${k}: ${v}`),
-    ``,
-    `The story:`,
-    pitch.message,
+    pitchText(pitch),
     ``,
     `Reply to this email to answer ${pitch.name} directly.`,
   ].join("\n");
@@ -73,7 +73,7 @@ ${rows.map(([k, v]) => `<tr><th align="left" style="${cell};width:96px;color:#8a
 <tr><td style="padding:14px 24px;border-top:1px solid #e6e2da;color:#8a8478;font-size:12px">Reply to this email to answer ${escape(pitch.name)} directly.</td></tr>
 </table></body></html>`;
 
-  return { subject: `${pitch.type} pitch from ${pitch.name}`, text, html };
+  return { subject: pitchSubject(pitch), text, html };
 }
 
 export async function POST(request: Request) {
@@ -102,21 +102,14 @@ export async function POST(request: Request) {
   // Honeypot filled: almost certainly a bot. Answer like a success, send nothing.
   if (pitch.company) return json({ ok: true }, 200);
 
-  const { subject, text, html } = emailBodies(pitch);
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL;
   const from = process.env.CONTACT_FROM_EMAIL;
-
-  if (!apiKey && process.env.NODE_ENV === "development") {
-    // Local testing without Resend: show the email in the terminal instead.
-    console.log(`\n[contact] RESEND_API_KEY not set, email not sent. Would send:\nTo: ${to ?? "(CONTACT_TO_EMAIL not set)"}\nFrom: ${from ?? "(CONTACT_FROM_EMAIL not set)"}\nReply-To: ${pitch.email}\nSubject: ${subject}\n\n${text}\n`);
-    return json({ ok: true }, 200);
-  }
-  if (!apiKey || !to || !from) {
-    console.error("[contact] Missing RESEND_API_KEY, CONTACT_TO_EMAIL or CONTACT_FROM_EMAIL");
-    return json({ ok: false, error: "The contact form isn't set up yet." }, 500);
+  if (!directSendEnabled() || !apiKey || !to || !from) {
+    return json({ ok: false, error: "Direct sending isn't switched on yet." }, 503);
   }
 
+  const { subject, text, html } = emailBodies(pitch);
   try {
     const { error } = await new Resend(apiKey).emails.send({ from, to, replyTo: pitch.email, subject, text, html });
     if (error) {
