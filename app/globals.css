@@ -190,7 +190,10 @@ body.lock{overflow:hidden}
 .im .eyebrow{font-family:var(--display);font-size:24px;letter-spacing:.2em;color:var(--gold)}
 .sig{font-family:var(--script);font-size:clamp(64px,7vw,100px);line-height:.7;color:var(--paper);transform:rotate(-4deg);display:inline-block}
 .hero h1{font-size:clamp(78px,13.5vw,212px);line-height:.84;display:grid}
-.hero h1 .l2{color:var(--gold);background:linear-gradient(180deg,var(--gold-hi),var(--gold) 50%,#a57a2e);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* Gradient on the <em> that holds the letters, not on the .l2 wrapper: Safari/iOS (WebKit) puts the
+   animated (transformed) <em> on its own layer, so a parent's background-clip:text clips to nothing
+   and "Storyteller" vanished. The reference had it on .l2. */
+.hero h1 .l2 em{color:var(--gold);background:linear-gradient(180deg,var(--gold-hi),var(--gold) 50%,#a57a2e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .hero h1 span{display:block;overflow:hidden}
 .hero h1 span em{display:block;font-style:normal}
 body.action .hero h1 span em{animation:rise 1.1s cubic-bezier(.2,.9,.2,1) both}

@@ -11,10 +11,12 @@ Contents
 - docs/content/ ........ films.json (27), journey.json (10), settings.json — seed data
 - docs/reference/ ...... design-reference.html — the approved design
 
-## Contact form: two modes
+## Contact form: three modes
 
-The "Pitch your story" form picks its mode on the server at build/render time
-(`lib/contact-mode.ts`). Only a true/false reaches the browser; the keys never do.
+The "Pitch your story" form picks its mode on the server **for each request**
+(`lib/contact-mode.ts`, called from `components/ContactSection.tsx` after `connection()`).
+The rest of the home page is prerendered at build time, so the contact section is a dynamic
+hole that streams in the same response. Only the mode name reaches the browser; the keys never do.
 
 | Env vars set | Site settings email | What visitors get |
 |---|---|---|
@@ -25,6 +27,13 @@ The "Pitch your story" form picks its mode on the server at build/render time
 To switch to direct sending once the domain is verified in Resend: add the three
 variables in Vercel → Project → Settings → Environment Variables (and in `.env.local`
 for local work), then redeploy (or restart `npm run dev`). No code change is needed.
+Vercel only gives a deployment the env vars that existed when it was created, so a new
+deployment is still needed after changing them.
+
+**Checking the mode (temporary).** The `<section id="contact">` element carries
+`data-contact-mode` (`direct` / `mailto` / `socials`) and `data-contact-source="request"`.
+When the mode isn't `direct`, `data-contact-missing` lists the *names* of the Resend vars the
+server can't see (never their values). Remove these three attributes once production is verified.
 
 ## Publishing refresh (Sanity webhook)
 

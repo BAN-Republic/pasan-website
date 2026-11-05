@@ -135,3 +135,11 @@ export interface SiteSettings {
   contactImage: SanityImage | null;
   quote: string | null;
 }
+
+/**
+ * How the contact section works, decided on the server per request (lib/contact-mode.ts).
+ * direct:  POST to /api/contact, which sends through Resend.
+ * mailto:  no Resend config; open the visitor's email app with the pitch filled in.
+ * socials: neither Resend nor a public email; show the social links instead of a form.
+ */
+export type ContactMode = "direct" | "mailto" | "socials";

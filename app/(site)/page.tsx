@@ -1,6 +1,6 @@
 import About from "@/components/About";
 import Clients from "@/components/Clients";
-import Contact from "@/components/Contact";
+import ContactSection from "@/components/ContactSection";
 import FilmStrip from "@/components/FilmStrip";
 import GradeLab from "@/components/GradeLab";
 import Hero from "@/components/Hero";
@@ -9,7 +9,6 @@ import JsonLd from "@/components/JsonLd";
 import Marquee from "@/components/Marquee";
 import VideoModal from "@/components/VideoModal";
 import WorkGrid from "@/components/WorkGrid";
-import { directSendEnabled } from "@/lib/contact-mode";
 import { getBtsFrames, getFilms, getJourney, getSettings } from "@/lib/queries";
 
 export default async function Home() {
@@ -33,7 +32,7 @@ export default async function Home() {
         <Journey steps={journey} intro={settings?.journeyIntro ?? null} quote={settings?.quote ?? null} />
         <FilmStrip frames={frames} />
         <Clients clients={settings?.clients ?? []} />
-        <Contact settings={settings} directSend={directSendEnabled()} />
+        <ContactSection settings={settings} />
       </main>
       <VideoModal films={films} showreelId={settings?.showreelYoutubeId ?? null} />
       <JsonLd settings={settings} films={films} />

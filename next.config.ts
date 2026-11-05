@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
     ],
   },
   partialPrefetching: true,
+  experimental: {
+    // Turbopack's on-disk cache kept serving an old app/globals.css (through the
+    // @tailwindcss/turbopack loader below) after the file changed, in both `next dev` and
+    // `next build`. Vercel restores .next/cache between deploys, so CSS fixes could silently
+    // not ship. Off = every build compiles the current CSS (≈20 s more per build).
+    turbopackFileSystemCacheForBuild: false,
+    turbopackFileSystemCacheForDev: false,
+  },
   turbopack: {
     rules: {
       "*.css": {

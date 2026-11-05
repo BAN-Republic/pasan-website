@@ -18,20 +18,17 @@ import {
 import { sanityImageProps } from "@/lib/image";
 import { clap, tick } from "@/lib/sound";
 import { toast } from "@/lib/toast";
-import type { SiteSettings } from "@/lib/types";
+import type { ContactMode, SiteSettings } from "@/lib/types";
 
 interface ContactProps {
   settings: SiteSettings | null;
-  /** Decided on the server (lib/contact-mode.ts): true once the Resend env vars are set. */
-  directSend: boolean;
+  /** Decided on the server per request (lib/contact-mode.ts, components/ContactSection.tsx). */
+  mode: ContactMode;
+  /** True for the build-time placeholder shown until the per-request section streams in. */
+  pending?: boolean;
+  /** TEMP diagnostics: comma-separated names (never values) of missing Resend env vars. */
+  missingVars?: string;
 }
-
-/**
- * direct:  POST to /api/contact, which sends through Resend.
- * mailto:  no Resend config yet; open the visitor's email app with the pitch filled in.
- * socials: neither Resend nor a public email; show the social links instead of a form.
- */
-type Mode = "direct" | "mailto" | "socials";
 
 type Status =
   | { state: "idle" }
@@ -52,12 +49,11 @@ function today() {
   return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${String(d.getFullYear()).slice(2)}`;
 }
 
-export default function Contact({ settings, directSend }: ContactProps) {
+export default function Contact({ settings, mode, pending = false, missingVars }: ContactProps) {
   const bg = settings?.contactImage ? sanityImageProps(settings.contactImage, 1400) : null;
   const socials = socialLinks(settings?.socials ?? null);
   const email = settings?.email ?? null;
   const firstName = settings?.name?.split(" ")[0];
-  const mode: Mode = directSend ? "direct" : email ? "mailto" : "socials";
 
   const [status, setStatus] = useState<Status>({ state: "idle" });
   const [errors, setErrors] = useState<PitchErrors>({});
@@ -175,7 +171,14 @@ export default function Contact({ settings, directSend }: ContactProps) {
     ) : null;
 
   return (
-    <section className="sec contact" id="contact">
+    <section
+      className="sec contact"
+      id="contact"
+      // TEMP (remove once production is verified): mode name and where it was decided.
+      data-contact-mode={mode}
+      data-contact-source={pending ? "build" : "request"}
+      data-contact-missing={missingVars || undefined}
+    >
       {bg && (
         <div className="bg">
           <Image {...bg} alt="" sizes="(max-width: 760px) 100vw, 48vw" />
