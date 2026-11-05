@@ -6,25 +6,52 @@ import { sanityImageProps } from "@/lib/image";
 import { tick } from "@/lib/sound";
 import type { SanityImage } from "@/lib/types";
 
-// The five looks, exactly as in the design reference (kept in code, not Sanity).
+// The five looks from the design reference (kept in code, not Sanity). Names, LUTs,
+// wheels, lift/gamma/gain and white balance are exactly as in the reference. The CSS
+// filters and tint strength were lifted for Pasan's darker photo (the reference was
+// tuned for a brighter placeholder): measured on his face, Amber Night, Teal & Orange,
+// Bleach Bypass and Noir crushed 17–30% of it to near-black. Golden Hour is unchanged.
+// Filters run left to right: in the high-contrast looks brightness comes before
+// contrast, so shadows are lifted before contrast would push them to black.
 const LOOKS = [
-  { n: "Amber Night", lut: "PR_AMBER_NIGHT.cube", f: "contrast(1.18) saturate(1.15) sepia(.22) brightness(.92)", tint: "linear-gradient(160deg,#0e3a44,#2a2a2a 45%,#e0a24a)", o: 0.55, w: [[-6, 8], [4, -3], [10, -8]], k: "3200K", ln: "-0.04 / 0.98 / 1.06" },
-  { n: "Teal & Orange", lut: "PR_TEAL_ORANGE.cube", f: "contrast(1.25) saturate(1.35) brightness(.95)", tint: "linear-gradient(120deg,#004f5a,#ff8a3d)", o: 0.6, w: [[-12, 10], [0, 0], [14, -10]], k: "4300K", ln: "-0.06 / 1.00 / 1.10" },
-  { n: "Bleach Bypass", lut: "PR_BLEACH.cube", f: "contrast(1.5) saturate(.38) brightness(.9)", tint: "linear-gradient(180deg,#56656b,#c9c2b4)", o: 0.35, w: [[-4, -2], [0, 0], [2, 2]], k: "5600K", ln: "-0.09 / 0.92 / 1.14" },
-  { n: "Noir", lut: "PR_NOIR.cube", f: "grayscale(1) contrast(1.55) brightness(.86)", tint: "linear-gradient(180deg,#000,#fff)", o: 0.15, w: [[0, 0], [0, 0], [0, 0]], k: "Mono", ln: "-0.12 / 0.90 / 1.18" },
+  { n: "Amber Night", lut: "PR_AMBER_NIGHT.cube", f: "contrast(1.06) saturate(1.15) sepia(.22) brightness(1.14)", tint: "linear-gradient(160deg,#0e3a44,#2a2a2a 45%,#e0a24a)", o: 0.45, w: [[-6, 8], [4, -3], [10, -8]], k: "3200K", ln: "-0.04 / 0.98 / 1.06" },
+  { n: "Teal & Orange", lut: "PR_TEAL_ORANGE.cube", f: "contrast(1.12) saturate(1.35) brightness(1.12)", tint: "linear-gradient(120deg,#004f5a,#ff8a3d)", o: 0.55, w: [[-12, 10], [0, 0], [14, -10]], k: "4300K", ln: "-0.06 / 1.00 / 1.10" },
+  { n: "Bleach Bypass", lut: "PR_BLEACH.cube", f: "saturate(.38) brightness(1.2) contrast(1.26)", tint: "linear-gradient(180deg,#56656b,#c9c2b4)", o: 0.3, w: [[-4, -2], [0, 0], [2, 2]], k: "5600K", ln: "-0.09 / 0.92 / 1.14" },
+  { n: "Noir", lut: "PR_NOIR.cube", f: "grayscale(1) brightness(1.22) contrast(1.28)", tint: "linear-gradient(180deg,#000,#fff)", o: 0.15, w: [[0, 0], [0, 0], [0, 0]], k: "Mono", ln: "-0.12 / 0.90 / 1.18" },
   { n: "Golden Hour", lut: "PR_GOLDEN.cube", f: "contrast(1.1) saturate(1.3) sepia(.35) brightness(1.02) hue-rotate(-8deg)", tint: "linear-gradient(200deg,#ffcb6b,#7a3b12)", o: 0.5, w: [[2, 10], [8, -6], [14, -12]], k: "2800K", ln: "+0.02 / 1.04 / 1.02" },
 ] as const;
 
 const WHEELS = ["Lift", "Gamma", "Gain"];
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
+const LAB_ASPECT = 2.39; // .lab{aspect-ratio:2.39/1}
+
+/**
+ * Where the before/after line starts, in % of the frame width: through the
+ * image's hotspot (his face), so both halves of the face show the comparison.
+ * Accounts for object-fit: cover cropping the sides of images wider than 2.39:1.
+ * Without a hotspot, 50% as in the reference.
+ */
+function defaultSplit(image: SanityImage | null): number {
+  const hotspot = image?.hotspot;
+  if (!image || !hotspot) return 50;
+  const crop = image.crop ?? { top: 0, bottom: 0, left: 0, right: 0 };
+  const { width, height } = image.asset.metadata.dimensions;
+  const cropWidth = 1 - crop.left - crop.right;
+  const x = (hotspot.x - crop.left) / cropWidth; // within the cropped image
+  const aspect = (width * cropWidth) / (height * (1 - crop.top - crop.bottom));
+  const visible = aspect > LAB_ASPECT ? LAB_ASPECT / aspect : 1; // share of the width in frame
+  const offset = (1 - visible) * x; // object-position x = hotspot x
+  return Math.round(clamp(((x - offset) / visible) * 100));
+}
 
 interface GradeLabProps {
   image: SanityImage | null;
 }
 
 export default function GradeLab({ image }: GradeLabProps) {
+  const split = defaultSplit(image);
   const [lookIndex, setLookIndex] = useState(0);
-  const [x, setX] = useState(50);
+  const [x, setX] = useState(split);
   const lab = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const touched = useRef(false);
@@ -44,7 +71,7 @@ export default function GradeLab({ image }: GradeLabProps) {
         const animate = (t: number) => {
           if (touched.current) return; // the visitor took over
           const k = Math.min(1, (t - start) / 1800);
-          setX(50 + Math.sin(k * Math.PI * 2) * 22 * (1 - k));
+          setX(clamp(split + Math.sin(k * Math.PI * 2) * 22 * (1 - k)));
           if (k < 1) frame = requestAnimationFrame(animate);
         };
         frame = requestAnimationFrame(animate);
@@ -56,7 +83,7 @@ export default function GradeLab({ image }: GradeLabProps) {
       io.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [split]);
 
   function moveTo(clientX: number) {
     const r = lab.current!.getBoundingClientRect();

@@ -20,7 +20,7 @@ export default async function Footer({ name, line, logo }: FooterProps) {
     <footer>
       <div className="wrap">
         {logoImage ? (
-          <Image {...logoImage} alt={logoImage.alt} className="footer-logo" />
+          <Image {...logoImage} alt={logoImage.alt} className="footer-logo" sizes="210px" />
         ) : (
           first && <span className="sig">{first}</span>
         )}

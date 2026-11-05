@@ -55,15 +55,20 @@ export function sanityImageProps(
 }
 
 /**
- * A transparent logo at a fixed display width. No blur placeholder (it would
- * show a box behind the transparency); next/image's srcset covers 2× screens.
+ * A transparent logo shown at `displayWidth` CSS px (set the size in CSS and pass
+ * `sizes`). The source is 2× that for retina. width/height are the source file's
+ * own pixel size, as Sanity rounds it: using the display size instead made the
+ * height attribute differ from the rendered height by a rounding pixel, which
+ * next/image reports as "width or height modified, but not the other".
+ * No blur placeholder: it would show a box behind the transparency.
  */
 export function logoImageProps(image: SanityImage, displayWidth: number, fallbackAlt: string): ImageProps {
   const { width, height } = image.asset.metadata.dimensions;
+  const sourceWidth = Math.min(width, displayWidth * 2);
   return {
-    src: builder.image(image).width(Math.min(width, displayWidth * 2)).auto("format").url(),
-    width: displayWidth,
-    height: Math.round((displayWidth * height) / width),
+    src: builder.image(image).width(sourceWidth).auto("format").url(),
+    width: sourceWidth,
+    height: Math.round((sourceWidth * height) / width),
     alt: image.alt || fallbackAlt,
   };
 }
