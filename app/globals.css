@@ -509,3 +509,20 @@ html[data-intro="skip"] #intro{display:none}
    shrink to their content: the Close button sat mid-screen next to the clip ID and
    Previous/Next bunched in the middle. Let them span the row as space-between intends. */
 .modal > .wrap{width:100%}
+/* Logo (Sanity) and the P mark (public/brand/p-mark.png); not in the reference. */
+.brand.has-mark{grid-template-columns:auto auto;column-gap:12px;align-items:center}
+.brand.has-mark .mark{grid-row:1 / span 2;width:34px;height:auto}
+.brand.has-mark > b,.brand.has-mark > span{grid-column:2}
+.gate-logo{display:block;width:min(72vw,400px);height:auto}
+:where(.site) footer .footer-logo{display:block;width:210px;height:auto}
+
+/* Hero with a real portrait on phones. The reference stretches the photo over the whole
+   hero and pins the copy to the bottom, so on shorter screens the headline lands on his
+   face. Instead: photo as a block starting under the nav and the HUD's REC line (120px,
+   so neither crosses his face) that fades into ink, and copy that always starts below it
+   (120px + 64vw ≈ below the chin with the hotspot in the upper third). */
+@media (max-width:760px){
+  .hero{padding-top:calc(120px + env(safe-area-inset-top,0px) + 64vw)}
+  .hero-media img{top:calc(120px + env(safe-area-inset-top,0px));height:115vw;-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 100%);mask-image:linear-gradient(180deg,#000 55%,transparent 100%)}
+  .hero-media::after{background:linear-gradient(180deg,rgba(11,11,11,.45),rgba(11,11,11,.08) 22%,transparent 40%)}
+}

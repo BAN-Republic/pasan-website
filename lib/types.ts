@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from "next-sanity";
+
 // Domain types for every Sanity schema, shaped as the GROQ projections in
 // lib/queries.ts return them. Missing optional fields come back as null.
 
@@ -60,6 +62,8 @@ export interface Film {
   product: string | null;
   category: FilmCategory;
   year: number | null;
+  /** YYYY-MM-DD; used as uploadDate in the JSON-LD. */
+  releaseDate: string | null;
   role: FilmRole[] | null;
   thumbnail: SanityImage | null;
   description: string | null;
@@ -92,7 +96,8 @@ export interface Socials {
 
 export interface Award {
   title: string;
-  detail: string | null;
+  /** One block of text; the only mark is `em` (italic, e.g. a film title). */
+  detail: PortableTextBlock[] | null;
 }
 
 export interface Stat {
@@ -109,6 +114,8 @@ export interface SiteSettings {
   /** Derived from showreelYoutubeUrl at fetch time. */
   showreelYoutubeId: string | null;
   showreelYoutubeThumbnail: "maxresdefault" | "hqdefault" | null;
+  /** YYYY-MM-DD; used as uploadDate in the JSON-LD. */
+  showreelReleaseDate: string | null;
   email: string | null;
   location: string | null;
   availability: string | null;
@@ -121,6 +128,7 @@ export interface SiteSettings {
   craftTags: string[] | null;
   journeyIntro: string | null;
   footerLine: string | null;
+  logo: SanityImage | null;
   heroImage: SanityImage | null;
   portraitImage: SanityImage | null;
   gradeLabImage: SanityImage | null;

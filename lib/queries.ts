@@ -28,6 +28,7 @@ export const FILMS_QUERY = defineQuery(`
     product,
     category,
     year,
+    releaseDate,
     role,
     thumbnail ${IMAGE},
     description,
@@ -61,6 +62,7 @@ export const SETTINGS_QUERY = defineQuery(`
     tagline,
     roles,
     showreelYoutubeUrl,
+    showreelReleaseDate,
     email,
     location,
     availability,
@@ -73,6 +75,7 @@ export const SETTINGS_QUERY = defineQuery(`
     craftTags,
     journeyIntro,
     footerLine,
+    logo ${IMAGE},
     heroImage ${IMAGE},
     portraitImage ${IMAGE},
     gradeLabImage ${IMAGE},
@@ -82,7 +85,10 @@ export const SETTINGS_QUERY = defineQuery(`
 `);
 
 // Cached fetch helpers. All share the 'content' tag, which the Sanity webhook
-// expires (SPEC §7). cacheLife('hours') is only a fallback if a webhook is missed.
+// expires (SPEC §7). In production 'hours' is only a fallback if a webhook is
+// missed. In development there is no webhook (Sanity can't reach localhost), so
+// refresh within seconds: edits in the Studio show up on the next reload.
+const DEV = process.env.NODE_ENV === "development";
 
 /**
  * Published films in display order: Studio order, except that the first
@@ -91,7 +97,8 @@ export const SETTINGS_QUERY = defineQuery(`
 export async function getFilms(): Promise<Film[]> {
   "use cache";
   cacheTag("content");
-  cacheLife("hours");
+  if (DEV) cacheLife("seconds");
+  else cacheLife("hours");
   const raw = await client.fetch<Omit<Film, "youtubeId" | "youtubeThumbnail">[]>(FILMS_QUERY);
   const films = await Promise.all(
     raw.map(async (film) => {
@@ -110,21 +117,24 @@ export async function getFilms(): Promise<Film[]> {
 export async function getJourney(): Promise<JourneyStep[]> {
   "use cache";
   cacheTag("content");
-  cacheLife("hours");
+  if (DEV) cacheLife("seconds");
+  else cacheLife("hours");
   return client.fetch<JourneyStep[]>(JOURNEY_QUERY);
 }
 
 export async function getBtsFrames(): Promise<BtsFrame[]> {
   "use cache";
   cacheTag("content");
-  cacheLife("hours");
+  if (DEV) cacheLife("seconds");
+  else cacheLife("hours");
   return client.fetch<BtsFrame[]>(BTS_QUERY);
 }
 
 export async function getSettings(): Promise<SiteSettings | null> {
   "use cache";
   cacheTag("content");
-  cacheLife("hours");
+  if (DEV) cacheLife("seconds");
+  else cacheLife("hours");
   const settings = await client.fetch<
     Omit<SiteSettings, "showreelYoutubeId" | "showreelYoutubeThumbnail"> | null
   >(

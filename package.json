@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "upload-images": "tsx scripts/upload-images.ts"
   },
   "dependencies": {
     "@sanity/image-url": "^2.1.1",

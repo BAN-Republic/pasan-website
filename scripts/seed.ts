@@ -132,6 +132,18 @@ function slugify(text: string, fallback: string): string {
 
 const todos: string[] = [];
 
+/**
+ * One-line Portable Text block; `_text_` becomes italic (e.g. a film title).
+ * Keys are derived from `key` so re-seeding produces identical documents.
+ */
+function toBlock(text: string, key: string) {
+  const children = text
+    .split(/_(.+?)_/)
+    .map((part, i) => ({ _type: "span", _key: `${key}-s${i}`, text: part, marks: i % 2 ? ["em"] : [] }))
+    .filter((span) => span.text);
+  return [{ _type: "block", _key: key, style: "normal", markDefs: [], children }];
+}
+
 /** Values starting with "TODO" are placeholders: report them, don't store them. */
 function real(value: string | undefined, where: string): string | undefined {
   if (value?.toUpperCase().startsWith("TODO")) {
@@ -194,7 +206,12 @@ const settingsDoc = {
   availability: settings.availability,
   socials: settings.socials,
   bioParagraphs: settings.bioParagraphs,
-  awards: settings.awards?.map((award, i) => ({ _key: `award-${i}`, _type: "award", ...award })),
+  awards: settings.awards?.map((award, i) => ({
+    _key: `award-${i}`,
+    _type: "award",
+    title: award.title,
+    detail: award.detail ? toBlock(award.detail, `award-${i}-detail`) : undefined,
+  })),
   stats: settings.stats?.map((stat, i) => ({ _key: `stat-${i}`, _type: "stat", ...stat })),
   clients: settings.clients,
   marqueeWords: settings.marqueeWords,

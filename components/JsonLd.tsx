@@ -13,14 +13,15 @@ function embed(id: string) {
 }
 
 /**
- * Showreel VideoObject and an ItemList of the films. Only facts from Sanity;
- * uploadDate is left out because we don't store it.
+ * Showreel VideoObject and an ItemList of the films. Only facts from Sanity:
+ * a VideoObject needs uploadDate, so one is only emitted when a release date is
+ * set; films without one stay in the ItemList as a plain entry.
  */
 export default function JsonLd({ settings, films }: JsonLdProps) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
   const data: object[] = [];
 
-  if (settings?.showreelYoutubeId) {
+  if (settings?.showreelYoutubeId && settings.showreelReleaseDate) {
     const id = settings.showreelYoutubeId;
     data.push({
       "@context": "https://schema.org",
@@ -28,6 +29,7 @@ export default function JsonLd({ settings, films }: JsonLdProps) {
       name: `${settings.name} · Director's showreel`,
       description: settings.tagline ?? `Director's showreel of ${settings.name}`,
       thumbnailUrl: youTubeThumbnail(id, settings.showreelYoutubeThumbnail ?? "hqdefault"),
+      uploadDate: settings.showreelReleaseDate,
       embedUrl: embed(id),
       contentUrl: youTubeWatchUrl(id),
       creator: { "@type": "Person", name: settings.name },
@@ -40,19 +42,26 @@ export default function JsonLd({ settings, films }: JsonLdProps) {
       "@type": "ItemList",
       name: "Selected work",
       numberOfItems: films.length,
-      itemListElement: films.map((film, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        ...(siteUrl ? { url: `${siteUrl}/${filmHash(film.slug)}` } : {}),
-        item: {
-          "@type": "VideoObject",
-          name: film.title,
-          description: film.description ?? `${categoryLabel(film.category)} · ${film.client}`,
-          thumbnailUrl: youTubeThumbnail(film.youtubeId, film.youtubeThumbnail),
-          embedUrl: embed(film.youtubeId),
-          contentUrl: youTubeWatchUrl(film.youtubeId),
-        },
-      })),
+      itemListElement: films.map((film, i) => {
+        const url = siteUrl ? `${siteUrl}/${filmHash(film.slug)}` : youTubeWatchUrl(film.youtubeId);
+        if (!film.releaseDate) {
+          return { "@type": "ListItem", position: i + 1, name: film.title, url };
+        }
+        return {
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "VideoObject",
+            name: film.title,
+            description: film.description ?? `${categoryLabel(film.category)} · ${film.client}`,
+            thumbnailUrl: youTubeThumbnail(film.youtubeId, film.youtubeThumbnail),
+            uploadDate: film.releaseDate,
+            embedUrl: embed(film.youtubeId),
+            contentUrl: youTubeWatchUrl(film.youtubeId),
+            url,
+          },
+        };
+      }),
     });
   }
 

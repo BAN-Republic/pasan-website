@@ -1,8 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { logoImageProps } from "@/lib/image";
 import { INTRO_DONE_EVENT, INTRO_SEEN_KEY, introState } from "@/lib/intro";
 import { beep, clap, setSound, whirOff, whirOn } from "@/lib/sound";
+import type { SanityImage } from "@/lib/types";
 
 // Opening sequence, ported from the design reference with the same timings:
 // Roll sound → Speed → Roll camera → 3-2-1 leader → slate → snap → Action! → shutters.
@@ -15,6 +18,7 @@ type RollMode = "sound" | "silent" | "auto";
 
 interface IntroProps {
   name: string | null;
+  logo: SanityImage | null;
 }
 
 /** "Pasan Rasantha Chandrasekera" → "P. R. Chandrasekera" */
@@ -24,8 +28,9 @@ function directorCredit(name: string): string {
   return [...parts.map((p) => `${p[0]}.`), last].join(" ");
 }
 
-export default function Intro({ name }: IntroProps) {
+export default function Intro({ name, logo }: IntroProps) {
   const firstName = name?.split(/\s+/)[0];
+  const logoImage = logo ? logoImageProps(logo, 400, name ?? "Logo") : null;
   const [removed, setRemoved] = useState(false);
   const [run, setRun] = useState(false);
   const [leaderOn, setLeaderOn] = useState(false);
@@ -162,7 +167,20 @@ export default function Intro({ name }: IntroProps) {
       <div className="half b"></div>
       <div className="stage">
         <div className="gate">
-          {name && <p className="mono pre">{name} presents</p>}
+          {logoImage ? (
+            <>
+              <Image
+                {...logoImage}
+                alt={logoImage.alt}
+                className="gate-logo"
+                loading="eager"
+                sizes="(max-width: 555px) 72vw, 400px"
+              />
+              <p className="mono pre">presents</p>
+            </>
+          ) : (
+            name && <p className="mono pre">{name} presents</p>
+          )}
           <h2>
             Visual <span>Storyteller</span>
           </h2>

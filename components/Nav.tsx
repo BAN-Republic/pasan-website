@@ -1,6 +1,8 @@
+import Image from "next/image";
 import NavFrame, { Burger } from "@/components/NavFrame";
 import SoundToggle from "@/components/SoundToggle";
 import Timecode from "@/components/Timecode";
+import pMark from "@/public/brand/p-mark.png";
 
 export interface NavLink {
   href: string;
@@ -20,7 +22,9 @@ export default function Nav({ name, links }: NavProps) {
   return (
     <NavFrame>
       <div className="wrap">
-        <a href="#home" className="brand" aria-label={name ? `${name}, home` : "Home"}>
+        <a href="#home" className="brand has-mark" aria-label={name ? `${name}, home` : "Home"}>
+          {/* Just the P mark: the full logo's tagline would be unreadable at nav size. */}
+          <Image src={pMark} alt="" width={34} height={35} className="mark" loading="eager" />
           <b>{first.toUpperCase()}</b>
           {rest.length > 0 && <span>{rest.join(" ")}</span>}
         </a>

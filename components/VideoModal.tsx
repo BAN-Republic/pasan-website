@@ -118,12 +118,16 @@ export default function VideoModal({ films, showreelId }: VideoModalProps) {
   const label = categoryLabel(film.category);
   const clip = `A001_C${String(films.indexOf(film) + 1).padStart(3, "0")}`;
   const position = player.queue.indexOf(film.slug);
-  const specs: [string, string][] = [
+  // Optional rows only appear when set in the Studio.
+  const rows: [string, string | null][] = [
     ["Client", film.client],
-    ...(film.product ? [["Product", film.product] as [string, string]] : []),
+    ["Product", film.product],
     ["Category", label],
+    ["Year", film.year ? String(film.year) : null],
+    [film.role && film.role.length > 1 ? "Roles" : "Role", film.role?.join(", ") || null],
     ["Platform", "YouTube"],
   ];
+  const specs = rows.filter((row): row is [string, string] => Boolean(row[1]));
 
   return (
     <div className="modal" id="pmodal" role="dialog" aria-modal="true" aria-labelledby="pdTitle" ref={ref}>

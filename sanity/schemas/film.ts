@@ -59,6 +59,12 @@ export const film = defineType({
       validation: (rule) => rule.integer().min(1990).max(2100),
     }),
     defineField({
+      name: "releaseDate",
+      title: "Release date",
+      type: "date",
+      description: "When it was published on YouTube. Optional; helps search engines show the video.",
+    }),
+    defineField({
       name: "role",
       title: "Roles",
       type: "array",

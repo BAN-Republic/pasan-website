@@ -55,13 +55,13 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="site">
       <IntroScript />
-      <Intro name={settings?.name ?? null} />
+      <Intro name={settings?.name ?? null} logo={settings?.logo ?? null} />
       <div className="grain" aria-hidden="true" />
       <div className="vig" aria-hidden="true" />
       <Cursor />
       <Nav name={settings?.name ?? null} links={links} />
       {children}
-      <Footer name={settings?.name ?? null} line={settings?.footerLine ?? null} />
+      <Footer name={settings?.name ?? null} line={settings?.footerLine ?? null} logo={settings?.logo ?? null} />
       <ScrollTimecode />
       <Toast />
     </div>

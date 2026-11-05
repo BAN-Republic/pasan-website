@@ -51,6 +51,13 @@ export const siteSettings = defineType({
       validation: (rule) => rule.uri({ scheme: ["https", "http"] }),
     }),
     defineField({
+      name: "showreelReleaseDate",
+      title: "Showreel release date",
+      type: "date",
+      group: "profile",
+      description: "When the showreel was published on YouTube. Optional; helps search engines show the video.",
+    }),
+    defineField({
       name: "marqueeWords",
       title: "Marquee words",
       type: "array",
@@ -98,8 +105,32 @@ export const siteSettings = defineType({
               type: "string",
               validation: (rule) => rule.required(),
             }),
-            defineField({ name: "detail", type: "string" }),
+            defineField({
+              name: "detail",
+              type: "array",
+              description: "One line. Select a film title and press Ctrl/Cmd+I to set it in italics.",
+              // Plain text with italics only: no headings, lists or links.
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  styles: [{ title: "Normal", value: "normal" }],
+                  lists: [],
+                  marks: { decorators: [{ title: "Italic", value: "em" }], annotations: [] },
+                }),
+              ],
+              validation: (rule) => rule.max(1),
+            }),
           ],
+          preview: {
+            select: { title: "title", detail: "detail" },
+            prepare({ title, detail }) {
+              const block = Array.isArray(detail) ? detail[0] : null;
+              const text = Array.isArray(block?.children)
+                ? block.children.map((child: { text?: string }) => child.text ?? "").join("")
+                : "";
+              return { title, subtitle: text };
+            },
+          },
         }),
       ],
     }),
@@ -170,6 +201,21 @@ export const siteSettings = defineType({
           validation: (rule) => rule.uri({ scheme: ["https"] }),
         }),
       ),
+    }),
+    defineField({
+      name: "logo",
+      title: "Logo",
+      type: "image",
+      group: "images",
+      description: "Full logo on a transparent background (PNG). Shown in the intro and the footer.",
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alt text",
+          type: "string",
+          description: "Usually the words in the logo.",
+        }),
+      ],
     }),
     imageWithAlt("heroImage", "Hero image", "images"),
     imageWithAlt("portraitImage", "Portrait image", "images"),
