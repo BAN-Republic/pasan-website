@@ -54,6 +54,9 @@ export default function Contact({ settings, mode, pending = false, missingVars }
   const socials = socialLinks(settings?.socials ?? null);
   const email = settings?.email ?? null;
   const firstName = settings?.name?.split(" ")[0];
+  const phone = settings?.phone?.trim() || null;
+  // tel: links take only digits and a leading +.
+  const tel = phone ? `tel:${phone.replace(/(?!^\+)[^0-9]/g, "")}` : null;
 
   const [status, setStatus] = useState<Status>({ state: "idle" });
   const [errors, setErrors] = useState<PitchErrors>({});
@@ -210,6 +213,14 @@ export default function Contact({ settings, mode, pending = false, missingVars }
                 </div>
               </div>
             )}
+            {phone && tel && (
+              <div className="row">
+                <span className="mono">Phone</span>
+                <a href={tel} className="tel">
+                  {phone}
+                </a>
+              </div>
+            )}
             {settings?.location && (
               <div className="row">
                 <span className="mono">Based in</span>
@@ -238,16 +249,26 @@ export default function Contact({ settings, mode, pending = false, missingVars }
         </div>
 
         {mode === "socials" ? (
-          socials.length > 0 && (
+          (socials.length > 0 || tel) && (
             <div className="reach" id="reach">
               <div>
                 <p className="mono gold">Call sheet</p>
                 <h3>Pitch your story</h3>
               </div>
               <p style={{ color: "#cfcac2", fontSize: 15 }}>
-                Send a message{firstName ? ` to ${firstName}` : ""} on social and tell the story there.
+                {tel
+                  ? `Call${firstName ? ` ${firstName}` : ""}, or send a message on social and tell the story there.`
+                  : `Send a message${firstName ? ` to ${firstName}` : ""} on social and tell the story there.`}
               </p>
               <div className="btnrow">
+                {phone && tel && (
+                  <a className="btn2 social" href={tel} data-cur="Call" aria-label={`Call ${phone}`}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2" />
+                    </svg>
+                    Call
+                  </a>
+                )}
                 {socials.map(({ key, url }) => (
                   <a key={key} className="btn2 social" href={url} target="_blank" rel="noopener" data-cur="Open">
                     <SocialIcon name={key} />

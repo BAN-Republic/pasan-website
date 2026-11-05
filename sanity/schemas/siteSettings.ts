@@ -181,6 +181,14 @@ export const siteSettings = defineType({
       group: "contact",
       validation: (rule) => rule.email(),
     }),
+    defineField({
+      name: "phone",
+      type: "string",
+      group: "contact",
+      description: "Shown on the site as a tap-to-call link. Use the international format, e.g. +94 77 123 4567.",
+      validation: (rule) =>
+        rule.regex(/^\+?[0-9 ()-]{7,20}$/, { name: "phone number" }).warning(),
+    }),
     defineField({ name: "location", type: "string", group: "contact" }),
     defineField({ name: "availability", type: "string", group: "contact" }),
     defineField({
@@ -194,7 +202,7 @@ export const siteSettings = defineType({
       name: "socials",
       type: "object",
       group: "contact",
-      fields: ["youtube", "facebook", "instagram", "vimeo", "linkedin"].map((name) =>
+      fields: ["youtube", "facebook", "instagram", "tiktok", "vimeo", "linkedin"].map((name) =>
         defineField({
           name,
           type: "url",

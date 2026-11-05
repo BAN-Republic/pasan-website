@@ -9,11 +9,14 @@
   ],
   "showreelYoutubeUrl": "https://www.youtube.com/watch?v=ae6NjVvEt6Y",
   "email": "TODO@pasanrasantha.com",
+  "phone": "+94 77 578 7787",
   "location": "Colombo, Sri Lanka",
   "availability": "Booking projects worldwide",
   "socials": {
     "youtube": "https://www.youtube.com/@pasanrasantha",
-    "facebook": "https://www.facebook.com/Rasantha"
+    "facebook": "https://www.facebook.com/rasantha",
+    "instagram": "https://www.instagram.com/pasanrasantha",
+    "tiktok": "https://www.tiktok.com/@pasanrasantha"
   },
   "bioParagraphs": [
     "I'm Pasan Rasantha Chandrasekera, a Sri Lankan commercial film director and visual storyteller. For more than a decade I've worked across commercial production, cinematography, television, post-production and creative development, with key roles at Wide Angle Productions and Sky Films International before leading productions at Creativity LAB LK.",
@@ -47,7 +50,7 @@
       "label": "Featured films"
     },
     {
-      "value": 2,
+      "value": 4,
       "suffix": "",
       "label": "Institutes teaching"
     }

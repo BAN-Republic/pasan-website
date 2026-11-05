@@ -45,6 +45,7 @@ All in **Site settings** except the journey:
 - **Awards:** **About** tab → **Awards**. Each award has a **title** and a one-line **detail**. To make a film name italic, select it and press Ctrl+I (Cmd+I on a Mac).
 - **Numbers (stats):** **About** tab → **Stats**. Each one has a **value** (e.g. 18), an optional **suffix** (e.g. +) and a **label** (e.g. Years in film & TV). The numbers count up when visitors scroll to them.
 - **Clients:** **About** tab → **Clients**. Type a name and press Enter to add it. Click the small × to remove one.
+- **Contact details:** **Contact** tab → **Email**, **Phone** (write it with the country code, e.g. +94 77 123 4567, so it works for visitors abroad) and **Socials** (YouTube, Facebook, Instagram, TikTok, Vimeo, LinkedIn; paste the full link to your profile). Leave a box empty to hide it.
 - **Journey:** open **Journey** on the left. Each step has a **period** (e.g. 2012 – 21), a **title**, an **organisation**, a short **description** and a **status**: *Past*, *Present* (shows a red REC dot) or *Upcoming*. The text beside the Journey heading is **Journey intro** in Site settings → About.
 
 ## Behind-the-scenes photos

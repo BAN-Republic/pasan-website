@@ -344,6 +344,8 @@ body.action .im,body.action .roles,body.action .cta{animation:fade 1s .45s both}
 .email{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:clamp(18px,2vw,24px)}
 .email button{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:7px 11px;border:1px solid var(--line);color:var(--mute)}
 .email button:hover{border-color:var(--gold);color:var(--gold)}
+.cinfo .tel{width:fit-content;transition:color .3s}
+.cinfo .tel:hover{color:var(--gold)}
 :where(.site) form{background:rgba(11,11,11,.75);backdrop-filter:blur(6px);border:1px solid var(--line);padding:clamp(20px,3vw,32px);display:grid;gap:16px}
 :where(.site) form h3{font-size:34px}
 :where(.site) label{display:grid;gap:7px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);font-family:var(--mono)}

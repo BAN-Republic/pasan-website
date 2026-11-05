@@ -90,6 +90,7 @@ export interface Socials {
   youtube: string | null;
   facebook: string | null;
   instagram: string | null;
+  tiktok: string | null;
   vimeo: string | null;
   linkedin: string | null;
 }
@@ -117,6 +118,7 @@ export interface SiteSettings {
   /** YYYY-MM-DD; used as uploadDate in the JSON-LD. */
   showreelReleaseDate: string | null;
   email: string | null;
+  phone: string | null;
   location: string | null;
   availability: string | null;
   socials: Socials | null;

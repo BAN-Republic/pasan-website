@@ -6,6 +6,7 @@ export const SOCIAL_LABELS: Record<SocialKey, string> = {
   youtube: "YouTube",
   facebook: "Facebook",
   instagram: "Instagram",
+  tiktok: "TikTok",
   vimeo: "Vimeo",
   linkedin: "LinkedIn",
 };
@@ -36,6 +37,7 @@ export default function SocialIcon({ name }: { name: SocialKey }) {
           <circle cx="17.5" cy="6.5" r="0.5" />
         </>
       )}
+      {name === "tiktok" && <path d="M14 3v11.5a3.5 3.5 0 11-3.5-3.5M14 3c.4 2.6 2.2 4.4 5 4.6" />}
       {name === "vimeo" && <path d="M3 8.5l1 1.2s2-1.6 2.7-.8c.7.8 3.3 10.3 4.2 11.2.9.9 2.6.4 4.4-1.8C17.1 16 21 11 21 7.6S18.7 3.4 16 5.2c-1.3.9-2.4 2.8-2.7 3.9 1.4-.8 2.8-.7 2.4 1.4-.4 2.1-2.2 4.5-3 4.5s-1.6-4.6-2.3-7.3C9.6 4.9 7.7 5 6.4 5.8 5 6.7 3 8.5 3 8.5z" />}
       {name === "linkedin" && (
         <>

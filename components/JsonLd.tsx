@@ -38,6 +38,7 @@ export default function JsonLd({ settings, films }: JsonLdProps) {
       ...(settings.tagline ? { description: settings.tagline } : {}),
       ...(portrait ? { image: sanityImageUrl(portrait, 1200) } : {}),
       ...(settings.email ? { email: `mailto:${settings.email}` } : {}),
+      ...(settings.phone ? { telephone: settings.phone } : {}),
       ...(settings.location ? { homeLocation: { "@type": "Place", name: settings.location } } : {}),
       ...(settings.craftTags?.length ? { knowsAbout: settings.craftTags } : {}),
       ...(settings.awards?.length ? { award: settings.awards.map((a) => (a.detail?.length ? `${a.title}: ${toPlainText(a.detail)}` : a.title)) } : {}),

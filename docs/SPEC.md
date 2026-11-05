@@ -79,7 +79,7 @@ period (string, e.g. "2012 – 21"), title, organisation, description (text), st
 image (required, with alt), caption, label (e.g. "Day 02"), orderRank.
 
 ### siteSettings (singleton)
-name, tagline, roles (array of strings), showreelYoutubeUrl, email, location, availability, socials (youtube, facebook, instagram, vimeo, linkedin – all optional urls), bioParagraphs (array of text), awards (array of {title, detail}), stats (array of {value:number, suffix, label}), clients (array of strings), heroImage, portraitImage, gradeLabImage, contactImage, quote.
+name, tagline, roles (array of strings), showreelYoutubeUrl, email, phone, location, availability, socials (youtube, facebook, instagram, tiktok, vimeo, linkedin – all optional urls), bioParagraphs (array of text), awards (array of {title, detail}), stats (array of {value:number, suffix, label}), clients (array of strings), heroImage, portraitImage, gradeLabImage, contactImage, quote.
 
 Use a structure builder so siteSettings opens as a single document, and Films, Journey, BTS appear as lists.
 
